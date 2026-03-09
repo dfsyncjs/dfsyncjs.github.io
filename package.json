@@ -10,6 +10,7 @@
     "preview": "vite preview",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
+    "test": "",
     "lint-staged": "lint-staged",
     "prepare": "husky"
   },
