@@ -1,4 +1,4 @@
-import { Typography, Box } from '@mui/material';
+import { Typography } from '@mui/material';
 
 export function Brand() {
   return (
@@ -9,7 +9,6 @@ export function Brand() {
         textDecoration: 'none',
         color: 'inherit',
         fontWeight: 700,
-        // flexGrow: 1
       }}
     >
       dfsync
