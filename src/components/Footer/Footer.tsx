@@ -18,7 +18,7 @@ export const Footer = () => {
           alignItems={{ xs: 'flex-start', sm: 'center' }}
         >
           <Typography variant="body2" color="text.secondary">
-            © {new Date().getFullYear()} dfsync.io
+            © {new Date().getFullYear()} dfsync
           </Typography>
 
           <Stack direction="row" spacing={2}>
