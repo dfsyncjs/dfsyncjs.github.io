@@ -31,7 +31,7 @@ const items = [
   },
 ];
 
-export function Features() {
+export const Features = () => {
   return (
     <Container maxWidth="lg" sx={{ pb: { xs: 8, md: 12 } }}>
       <Stack spacing={2} sx={{ mb: 5 }}>
@@ -61,4 +61,4 @@ export function Features() {
       </Grid>
     </Container>
   );
-}
+};

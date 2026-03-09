@@ -1,9 +1,9 @@
+import { useState } from 'react';
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import CheckIcon from '@mui/icons-material/Check';
 import { IconButton, Stack, Typography } from '@mui/material';
-import { useState } from 'react';
 
-export function InstallCommand() {
+export const InstallCommand = () => {
   const [copied, setCopied] = useState(false);
 
   const command = 'npm install @dfsync/client';
@@ -43,4 +43,4 @@ export function InstallCommand() {
       </IconButton>
     </Stack>
   );
-}
+};

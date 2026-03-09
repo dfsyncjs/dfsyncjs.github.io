@@ -1,10 +1,11 @@
 import { Typography } from '@mui/material';
+import { Link as RouterLink } from 'react-router-dom';
 
-export function Brand() {
+export const Brand = () => {
   return (
     <Typography
-      component="a"
-      href="/"
+      component={RouterLink}
+      to="/"
       sx={{
         textDecoration: 'none',
         color: 'inherit',
@@ -14,4 +15,4 @@ export function Brand() {
       dfsync
     </Typography>
   );
-}
+};

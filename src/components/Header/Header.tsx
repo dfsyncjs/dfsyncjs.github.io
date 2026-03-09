@@ -1,16 +1,9 @@
 import GitHubIcon from '@mui/icons-material/GitHub';
-import LightModeIcon from '@mui/icons-material/LightMode';
-import DarkModeIcon from '@mui/icons-material/DarkMode';
-import { AppBar, Box, Button, Container, IconButton, Toolbar } from '@mui/material';
-import type { PaletteMode } from '@mui/material';
-import { Brand } from './Brand';
+import { AppBar, Box, Button, Container, Toolbar } from '@mui/material';
+import { Brand } from '../Brand/Brand';
+import { ThemeToggle } from '../ThemeToggle/ThemeToggle.tsx';
 
-type HeaderProps = {
-  mode: PaletteMode;
-  onToggleMode: () => void;
-};
-
-export function Header({ mode, onToggleMode }: HeaderProps) {
+export const Header = () => {
   return (
     <AppBar
       position="sticky"
@@ -51,14 +44,10 @@ export function Header({ mode, onToggleMode }: HeaderProps) {
             >
               GitHub
             </Button>
-            {/*<Box>*/}
-            <IconButton color="inherit" onClick={onToggleMode} aria-label="toggle theme">
-              {mode === 'dark' ? <LightModeIcon /> : <DarkModeIcon />}
-            </IconButton>
-            {/*</Box>*/}
+            <ThemeToggle />
           </Box>
         </Toolbar>
       </Container>
     </AppBar>
   );
-}
+};

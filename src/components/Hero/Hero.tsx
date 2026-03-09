@@ -1,8 +1,8 @@
 import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 import { Box, Button, Chip, Container, Stack, Typography } from '@mui/material';
-import { InstallCommand } from './InstallCommand.tsx';
+import { InstallCommand } from '../InstallCommand/InstallCommand';
 
-export function Hero() {
+export const Hero = () => {
   return (
     <Box
       component="section"
@@ -47,6 +47,8 @@ export function Hero() {
               variant="contained"
               size="medium"
               href="https://www.npmjs.com/package/@dfsync/client"
+              target="_blank"
+              rel="noreferrer"
               endIcon={<OpenInNewIcon />}
             >
               View on npm
@@ -100,4 +102,4 @@ const users = await client.get("/users");`}
       </Container>
     </Box>
   );
-}
+};
