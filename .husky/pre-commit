@@ -1,5 +1,5 @@
 #!/usr/bin/env sh
 
 echo "Formatting staged files..."
-npm run lint-staged
+npx lint-staged
 
