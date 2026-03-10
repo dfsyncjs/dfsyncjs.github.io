@@ -23,7 +23,7 @@ export const InstallCommand = () => {
         bgcolor: 'background.paper',
         border: '1px solid',
         borderColor: 'divider',
-        borderRadius: 3,
+        borderRadius: 1,
         px: 3,
         py: 2,
         maxWidth: 500,
