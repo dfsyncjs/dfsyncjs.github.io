@@ -1,6 +1,9 @@
 import OpenInNewIcon from '@mui/icons-material/OpenInNew';
+import ListIcon from '@mui/icons-material/List';
 import { Box, Button, Chip, Container, Stack, Typography } from '@mui/material';
+import { Link as RouterLink } from 'react-router-dom';
 import { InstallCommand } from '../InstallCommand/InstallCommand';
+import { ProjectBadges } from '../ProjectBadges/ProjectBadges.tsx';
 
 export const Hero = () => {
   return (
@@ -37,6 +40,8 @@ export const Hero = () => {
               }}
             />
 
+            <ProjectBadges />
+
             <Typography
               variant="h6"
               color="text.secondary"
@@ -64,12 +69,11 @@ export const Hero = () => {
               View on npm
             </Button>
             <Button
+              component={RouterLink}
               variant="outlined"
               size="medium"
-              href="https://github.com/dfsyncjs/dfsync/blob/main/packages/client/README.md"
-              target="_blank"
-              rel="noreferrer"
-              endIcon={<OpenInNewIcon />}
+              to="/docs"
+              startIcon={<ListIcon />}
             >
               Documentation
             </Button>
@@ -82,7 +86,7 @@ export const Hero = () => {
               mt: 3,
               width: '100%',
               p: { xs: 3, md: 4 },
-              borderRadius: 4,
+              borderRadius: 1,
               bgcolor: 'background.paper',
               border: '1px solid',
               borderColor: 'divider',

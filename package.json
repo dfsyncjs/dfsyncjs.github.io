@@ -6,12 +6,14 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
-    "elint": "eslint .",
-    "lint": "tsc --noEmit -p tsconfig.json",
     "preview": "vite preview",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "typecheck": "tsc --noEmit",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "test": "",
+    "ci": "npm run format:check && npm run typecheck && npm run lint && npm run test",
     "lint-staged": "lint-staged",
     "prepare": "husky"
   },

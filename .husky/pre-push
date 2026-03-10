@@ -1,6 +1,4 @@
 #!/usr/bin/env sh
 
-echo "Running checks before push..."
-
-npm run lint
-npm run test
+echo "Running CI checks..."
+npm run ci
