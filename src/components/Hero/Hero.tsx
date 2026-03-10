@@ -27,6 +27,16 @@ export const Hero = () => {
               Reliable HTTP communication for modern services.
             </Typography>
 
+            <Chip
+              label="NEW · Auth & lifecycle hooks"
+              color="primary"
+              variant="outlined"
+              sx={{
+                mt: 2,
+                fontWeight: 500,
+              }}
+            />
+
             <Typography
               variant="h6"
               color="text.secondary"
