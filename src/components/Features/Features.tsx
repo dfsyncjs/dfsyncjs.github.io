@@ -1,7 +1,7 @@
 import HubIcon from '@mui/icons-material/Hub';
 import SecurityIcon from '@mui/icons-material/Security';
+import VpnKeyIcon from '@mui/icons-material/VpnKey';
 import BoltIcon from '@mui/icons-material/Bolt';
-import InsightsIcon from '@mui/icons-material/Insights';
 import { Card, CardContent, Container, Grid, Stack, Typography } from '@mui/material';
 
 const items = [
@@ -18,16 +18,16 @@ const items = [
       'A clean, predictable HTTP client setup without repeating the same boilerplate in every project.',
   },
   {
+    icon: <VpnKeyIcon fontSize="large" />,
+    title: 'Auth & lifecycle hooks',
+    description:
+      'Built-in support for bearer tokens, API keys, and request lifecycle hooks like beforeRequest, afterResponse, and onError.',
+  },
+  {
     icon: <SecurityIcon fontSize="large" />,
     title: 'Production-oriented',
     description:
       'Designed for reliability, clear request behavior, and maintainable service communication.',
-  },
-  {
-    icon: <InsightsIcon fontSize="large" />,
-    title: 'Future dashboard',
-    description:
-      'A separate admin dashboard with metrics and insights can later live on a dedicated subdomain.',
   },
 ];
 
@@ -39,8 +39,8 @@ export const Features = () => {
           Why dfsync
         </Typography>
         <Typography color="text.secondary" sx={{ maxWidth: 720 }}>
-          A focused foundation for dependable HTTP communication between services, without turning a
-          simple client into a complex platform.
+          A focused foundation for dependable HTTP communication between services — with sensible
+          defaults, auth strategies, and lifecycle hooks.
         </Typography>
       </Stack>
 
