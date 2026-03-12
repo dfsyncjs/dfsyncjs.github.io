@@ -57,8 +57,13 @@ export const Hero = () => {
             </Typography>
           </Box>
 
-          <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2}>
+          <Stack
+            direction={{ xs: 'column', sm: 'row' }}
+            spacing={2}
+            sx={{ width: { xs: '100%', md: 'auto' } }}
+          >
             <Button
+              fullWidth
               variant="contained"
               size="medium"
               href="https://www.npmjs.com/package/@dfsync/client"
@@ -69,6 +74,7 @@ export const Hero = () => {
               View on npm
             </Button>
             <Button
+              fullWidth
               component={RouterLink}
               variant="outlined"
               size="medium"
