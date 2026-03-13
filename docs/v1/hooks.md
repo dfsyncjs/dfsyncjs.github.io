@@ -148,7 +148,9 @@ This is intentional, so hook failures never hide the real request failure.
 
 ```ts
 {
-  (request, url, headers);
+  request,
+  url,
+  headers
 }
 ```
 
@@ -156,7 +158,11 @@ This is intentional, so hook failures never hide the real request failure.
 
 ```ts
 {
-  (request, url, headers, response, data);
+  request,
+  url,
+  headers,
+  response,
+  data
 }
 ```
 
@@ -164,7 +170,10 @@ This is intentional, so hook failures never hide the real request failure.
 
 ```ts
 {
-  (request, url, headers, error);
+  request,
+  url,
+  headers,
+  error;
 }
 ```
 

@@ -153,7 +153,9 @@ Custom auth receives:
 
 ```ts
 {
-  (request, url, headers);
+  request,
+  url,
+  headers
 }
 ```
 
