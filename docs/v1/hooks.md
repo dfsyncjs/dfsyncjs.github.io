@@ -146,26 +146,20 @@ This is intentional, so hook failures never hide the real request failure.
 
 ### beforeRequest context
 
-```ts
-{
-  (request, url, headers);
-}
+```text
+request, url, headers
 ```
 
 ### afterResponse context
 
-```ts
-{
-  (request, url, headers, response, data);
-}
+```text
+request, url, headers, response, data
 ```
 
 ### onError context
 
-```ts
-{
-  (request, url, headers, error);
-}
+```text
+request, url, headers, error
 ```
 
 ## Hook order

@@ -151,10 +151,8 @@ const client = createClient({
 
 Custom auth receives:
 
-```ts
-{
-  (request, url, headers);
-}
+```text
+request, url, headers
 ```
 
 This lets you inspect the request and modify the final URL or headers before the request is sent.
