@@ -38,7 +38,23 @@ export const ProjectBadges = () => {
         />
       </Link>
 
-      {/* LICENSE */}
+      {/* github stars */}
+      <Link
+        href={`https://github.com/${repoName}`}
+        target="_blank"
+        rel="noreferrer"
+        underline="none"
+        sx={{ lineHeight: 1 }}
+      >
+        <Box
+          component="img"
+          src={`https://img.shields.io/github/stars/${repoName}`}
+          alt="github stars"
+          sx={{ height: 20 }}
+        />
+      </Link>
+
+      {/* LICENSE
       <Link
         href={`https://github.com/${repoName}/blob/main/LICENSE`}
         target="_blank"
@@ -53,6 +69,7 @@ export const ProjectBadges = () => {
           sx={{ height: 20 }}
         />
       </Link>
+      */}
     </Stack>
   );
 };

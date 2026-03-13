@@ -1,24 +1,180 @@
 # Errors
 
-Requests may fail due to different reasons such as HTTP errors, network issues, or timeouts.
+`@dfsync/client` throws structured error classes for different failure types.
 
-Use standard `try/catch` handling to handle failures.
+## Error classes
 
-## Example
+- `DfsyncError`
+- `HttpError`
+- `NetworkError`
+- `TimeoutError`
+
+## Base error
+
+All library-specific errors extend `DfsyncError`.
 
 ```ts
+import { DfsyncError } from '@dfsync/client';
+```
+
+It includes:
+
+- `message`
+- `code`
+- optional `cause`
+
+## HttpError
+
+Thrown when the server returns a non-2xx response.
+
+```ts
+import { HttpError } from '@dfsync/client';
+
 try {
-  const users = await client.get('/users');
+  await client.get('/users/999');
 } catch (error) {
-  console.error(error);
+  if (error instanceof HttpError) {
+    console.log(error.status);
+    console.log(error.statusText);
+    console.log(error.data);
+  }
 }
 ```
 
-## Typical error types
+Properties:
 
-- HTTP errors (non-2xx responses)
-- network errors
-- timeout errors
+- `code` → `"HTTP_ERROR"`
+- `status`
+- `statusText`
+- `data`
+- `response`
+
+Example use:
+
+```ts
+try {
+  await client.get('/users/999');
+} catch (error) {
+  if (error instanceof HttpError) {
+    if (error.status === 404) {
+      return null;
+    }
+
+    if (error.status === 401) {
+      throw new Error('Unauthorized');
+    }
+
+    throw error;
+  }
+
+  throw error;
+}
+```
+
+## NetworkError
+
+Thrown when `fetch` fails before a valid HTTP response is received.
+
+```ts
+import { NetworkError } from '@dfsync/client';
+
+try {
+  await client.get('/users');
+} catch (error) {
+  if (error instanceof NetworkError) {
+    console.error(error.message);
+    console.error(error.cause);
+  }
+}
+```
+
+Properties:
+
+- `code` → `"NETWORK_ERROR"`
+- optional `cause`
+
+## TimeoutError
+
+Thrown when the request is aborted because it exceeded the configured timeout.
+
+```ts
+import { TimeoutError } from '@dfsync/client';
+
+try {
+  await client.get('/slow-endpoint');
+} catch (error) {
+  if (error instanceof TimeoutError) {
+    console.error(error.timeout);
+  }
+}
+```
+
+Properties:
+
+- `code` → `"NETWORK_ERROR"`
+- `timeout`
+- optional `cause`
+
+## Error handling example
+
+```ts
+import { HttpError, NetworkError, TimeoutError } from '@dfsync/client';
+
+try {
+  const result = await client.get('/users/1');
+  return result;
+} catch (error) {
+  if (error instanceof TimeoutError) {
+    console.error('Request timed out');
+    throw error;
+  }
+
+  if (error instanceof NetworkError) {
+    console.error('Network failure');
+    throw error;
+  }
+
+  if (error instanceof HttpError) {
+    console.error('HTTP status:', error.status);
+    console.error('Response payload:', error.data);
+    throw error;
+  }
+
+  throw error;
+}
+```
+
+## How response bodies are exposed in errors
+
+For failed HTTP responses, the client parses the body first and stores it on `HttpError.data`.
+
+That means if the server responds with JSON:
+
+```json
+{ "message": "Bad Request" }
+```
+
+you can access it as:
+
+```ts
+if (error instanceof HttpError) {
+  console.log(error.data);
+}
+```
+
+## What is not wrapped
+
+Errors thrown inside:
+
+- custom auth
+
+- `beforeRequest`
+
+- `afterResponse`
+
+are rethrown as-is.
+
+They are not converted into `DfsyncError` subclasses.
 
 ## Note
 

@@ -2,25 +2,34 @@
 
 Install the package with your preferred package manager.
 
-## npm
+Install the package from npm:
 
 ```bash
 npm install @dfsync/client
 ```
 
+or with yarn:
+
+```bash
+yarn add @dfsync/client
+```
+
 ## Requirements
 
-- Node.js 18+
-- TypeScript (recommended)
+- Node.js `>= 20`
 
-## After installation
+## ESM / CJS
 
-Create your first client instance:
+The package ships with both import and require entry points, plus TypeScript types.
 
-```typescript
+## ESM
+
+```ts
 import { createClient } from '@dfsync/client';
+```
 
-const client = createClient({
-  baseURL: 'https://api.example.com',
-});
+## CommonJS
+
+```javascript
+const { createClient } = require('@dfsync/client');
 ```
