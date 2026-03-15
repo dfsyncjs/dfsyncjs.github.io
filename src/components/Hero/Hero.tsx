@@ -27,11 +27,11 @@ export const Hero = () => {
                 maxWidth: 900,
               }}
             >
-              Reliable HTTP communication for modern services.
+              Reliable HTTP communication for Node.js environments.
             </Typography>
 
             <Chip
-              label="NEW · Auth & lifecycle hooks"
+              label="NEW · Auth & Lifecycle Hooks & Retry"
               color="primary"
               variant="outlined"
               sx={{
@@ -52,8 +52,8 @@ export const Hero = () => {
                 lineHeight: 1.6,
               }}
             >
-              dfsync provides a unified HTTP client with sensible defaults for service-to-service
-              communication across microservices, internal APIs, workers, and external integrations.
+              dfsync - a lightweight & reliable HTTP client for service-to-service communication
+              across services in Node.js with retry, auth and lifecycle hooks.
             </Typography>
           </Box>
 
@@ -113,6 +113,10 @@ export const Hero = () => {
 
 const client = createClient({
   baseURL: "https://api.example.com",
+  retry: { 
+    attempts: 3,
+    backoff: 'exponential'
+  },
 });
 
 const users = await client.get("/users");`}

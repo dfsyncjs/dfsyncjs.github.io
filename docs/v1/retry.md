@@ -1,6 +1,6 @@
 # Retry
 
-`@dfsync/client` supports `configurable retry` policies for transient failures.
+`@dfsync/client` supports configurable retry policies for transient failures.
 
 Retries are useful when communicating with external services that may temporarily fail or return `5xx` responses.
 

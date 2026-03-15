@@ -21,6 +21,7 @@ The client focuses on predictable behavior, extensibility, and a clean developer
 - structured error classes
 - auth support
 - lifecycle hooks
+- retry support
 - custom `fetch` support
 
 ## Quick example

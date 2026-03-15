@@ -1,6 +1,8 @@
 import HubIcon from '@mui/icons-material/Hub';
 import SecurityIcon from '@mui/icons-material/Security';
-import VpnKeyIcon from '@mui/icons-material/VpnKey';
+import LockIcon from '@mui/icons-material/Lock';
+import ReplayIcon from '@mui/icons-material/Replay';
+import DeviceHubIcon from '@mui/icons-material/DeviceHub';
 import BoltIcon from '@mui/icons-material/Bolt';
 import { Card, CardContent, Container, Grid, Stack, Typography } from '@mui/material';
 
@@ -18,10 +20,19 @@ const items = [
       'A clean, predictable HTTP client setup without repeating the same boilerplate in every project.',
   },
   {
-    icon: <VpnKeyIcon fontSize="large" />,
-    title: 'Auth & lifecycle hooks',
-    description:
-      'Built-in support for bearer tokens, API keys, and request lifecycle hooks like beforeRequest, afterResponse, and onError.',
+    icon: <LockIcon fontSize="large" />,
+    title: 'Auth support',
+    description: 'Built-in support for bearer tokens, API keys.',
+  },
+  {
+    icon: <ReplayIcon fontSize="large" />,
+    title: 'Retry support',
+    description: 'Supports configurable retry policies for transient failures.',
+  },
+  {
+    icon: <DeviceHubIcon fontSize="large" />,
+    title: 'Lifecycle hooks',
+    description: 'Built-in request lifecycle hooks like beforeRequest, afterResponse, and onError.',
   },
   {
     icon: <SecurityIcon fontSize="large" />,
@@ -40,7 +51,7 @@ export const Features = () => {
         </Typography>
         <Typography color="text.secondary" sx={{ maxWidth: 720 }}>
           A focused foundation for dependable HTTP communication between services — with sensible
-          defaults, auth strategies, and lifecycle hooks.
+          defaults, auth strategies, lifecycle hooks and retry support.
         </Typography>
       </Stack>
 
