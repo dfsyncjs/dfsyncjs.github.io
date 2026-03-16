@@ -142,13 +142,63 @@ export function DocsPage() {
                     '& pre': {
                       overflowX: 'auto',
                       p: 2,
+                      borderRadius: 1,
+                      bgcolor: 'background.default',
+                      border: '1px solid',
+                      borderColor: 'divider',
+                      mb: 3,
+                    },
+
+                    '& pre code': {
+                      fontFamily: 'ui-monospace, SFMono-Regular, Menlo, monospace',
+                      fontSize: 14,
+                      lineHeight: 1.7,
+                      backgroundColor: 'transparent',
+                      padding: 0,
+                      borderRadius: 0,
+                      border: 'none',
+                    },
+
+                    '& code': {
+                      fontFamily: 'ui-monospace, SFMono-Regular, Menlo, monospace',
+                      fontSize: '0.9em',
+                      px: 0.75,
+                      py: 0.25,
                       borderRadius: 0.5,
                       bgcolor: 'background.default',
                       border: '1px solid',
                       borderColor: 'divider',
                     },
-                    '& code': {
-                      fontFamily: 'ui-monospace, SFMono-Regular, Menlo, monospace',
+                    '& table': {
+                      width: '100%',
+                      borderCollapse: 'collapse',
+                      mb: 3,
+                      overflow: 'hidden',
+                      borderRadius: 2,
+                      border: '1px solid',
+                      borderColor: 'divider',
+                    },
+                    '& thead': {
+                      bgcolor: 'background.default',
+                    },
+                    '& th': {
+                      textAlign: 'left',
+                      px: 2,
+                      py: 1.5,
+                      borderBottom: '1px solid',
+                      borderColor: 'divider',
+                      fontWeight: 700,
+                    },
+                    '& td': {
+                      px: 2,
+                      py: 1.5,
+                      borderBottom: '1px solid',
+                      borderColor: 'divider',
+                      color: 'text.secondary',
+                      verticalAlign: 'top',
+                    },
+                    '& tr:last-of-type td': {
+                      borderBottom: 'none',
                     },
                     '& a': {
                       color: 'primary.main',

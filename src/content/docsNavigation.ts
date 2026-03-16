@@ -4,6 +4,7 @@ export const docsNavigation = [
   { label: 'Create Client', slug: 'create-client' },
   { label: 'Auth', slug: 'auth' },
   { label: 'Hooks', slug: 'hooks' },
+  { label: 'Retry', slug: 'retry' },
   { label: 'Errors', slug: 'errors' },
   { label: 'Examples', slug: 'examples' },
 ] as const;

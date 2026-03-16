@@ -10,13 +10,13 @@ export const Hero = () => {
     <Box
       component="section"
       sx={{
-        py: { xs: 10, md: 14 },
+        py: { xs: 6, md: 12 },
         background: 'radial-gradient(circle at top, rgba(56,189,248,0.15), transparent 40%)',
       }}
     >
       <Container maxWidth="lg">
         <Stack spacing={4} alignItems="flex-start">
-          <Chip label="Open-source TypeScript HTTP library" color="primary" />
+          <Chip label="Open-source toolkit for backend communication" color="primary" />
 
           <Box>
             <Typography
@@ -27,17 +27,13 @@ export const Hero = () => {
                 maxWidth: 900,
               }}
             >
-              Reliable HTTP communication for modern services.
+              Reliable toolkit for service-to-service communication
             </Typography>
-
             <Chip
-              label="NEW · Auth & lifecycle hooks"
+              label="Built for microservices, internal APIs, integrations, and background workers"
               color="primary"
               variant="outlined"
-              sx={{
-                mt: 2,
-                fontWeight: 500,
-              }}
+              sx={{ mt: 1, mb: 1 }}
             />
 
             <ProjectBadges />
@@ -52,8 +48,9 @@ export const Hero = () => {
                 lineHeight: 1.6,
               }}
             >
-              dfsync provides a unified HTTP client with sensible defaults for service-to-service
-              communication across microservices, internal APIs, workers, and external integrations.
+              The first package, <strong>@dfsync/client</strong>, provides a lightweight and
+              reliable HTTP client for service-to-service communication in Node.js, with built-in
+              retry, authentication, and lifecycle hooks.
             </Typography>
           </Box>
 
@@ -113,6 +110,7 @@ export const Hero = () => {
 
 const client = createClient({
   baseURL: "https://api.example.com",
+  retry: { attempts: 3 }
 });
 
 const users = await client.get("/users");`}
