@@ -33,7 +33,7 @@ export const Header = () => {
             </Button>
             <Button
               color="inherit"
-              href="https://github.com/dfsyncjs/dfsync/tree/main/packages/client"
+              href="https://github.com/dfsyncjs/dfsync"
               target="_blank"
               rel="noreferrer"
               startIcon={<GitHubIcon />}

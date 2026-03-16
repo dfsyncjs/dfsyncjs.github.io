@@ -31,7 +31,7 @@ export const Footer = () => {
               npm
             </Link>
             <Link
-              href="https://github.com/dfsyncjs/dfsync/tree/main/packages/client"
+              href="https://github.com/dfsyncjs/dfsync"
               target="_blank"
               rel="noreferrer"
               underline="hover"

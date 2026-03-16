@@ -47,16 +47,46 @@ console.log(user.name);
 
 ## How requests work
 
-A request in `@dfsync/client` follows this flow:
+A request in `@dfsync/client` goes through the following lifecycle:
 
-1. build final URL from `baseUrl`, `path`, and optional query params
-2. merge default, client-level, and request-level headers
-3. apply auth configuration
-4. run `beforeRequest` hooks
-5. send request with `fetch`
-6. parse response as JSON, text, or `undefined` for `204`
-7. throw structured errors for failed requests
-8. run `afterResponse` or `onError` hooks
+1. Build request URL
+
+   The final URL is constructed from `baseUrl`, `path`, and optional query parameters.
+
+2. Merge headers
+
+   Default headers, client-level headers, and request-level headers are combined.
+
+3. Apply authentication
+
+   The configured auth strategy (Bearer, API key, or custom) is applied to the request.
+
+4. Run `beforeRequest` hooks
+
+   Hooks can modify the request before it is sent.
+
+5. Execute the HTTP request
+
+   The request is sent using the Fetch API.
+
+6. Retry if necessary
+
+   If the request fails with a retryable error, it may be retried according to the configured retry policy.
+
+7. Parse the response
+
+   The response body is parsed automatically:
+   - JSON → parsed object
+   - text → string
+   - `204 No Content` → `undefined`
+
+8. Handle errors
+
+   Non-success responses and network failures are converted into structured errors.
+
+9. Run response hooks
+   - `afterResponse` runs for successful responses
+   - `onError` runs when an error occurs
 
 ## Runtime requirements
 

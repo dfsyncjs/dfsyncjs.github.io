@@ -22,12 +22,12 @@ const items = [
   {
     icon: <LockIcon fontSize="large" />,
     title: 'Auth support',
-    description: 'Built-in support for bearer tokens, API keys.',
+    description: 'Built-in support for bearer tokens, API keys, and custom auth flows.',
   },
   {
     icon: <ReplayIcon fontSize="large" />,
     title: 'Retry support',
-    description: 'Supports configurable retry policies for transient failures.',
+    description: 'Built-in configurable retry policies for transient failures.',
   },
   {
     icon: <DeviceHubIcon fontSize="large" />,
@@ -47,11 +47,11 @@ export const Features = () => {
     <Container maxWidth="lg" sx={{ pb: { xs: 8, md: 12 } }}>
       <Stack spacing={2} sx={{ mb: 5 }}>
         <Typography variant="h2" sx={{ fontSize: { xs: '2rem', md: '3rem' } }}>
-          Why dfsync
+          Why @dfsync/client
         </Typography>
         <Typography color="text.secondary" sx={{ maxWidth: 720 }}>
-          A focused foundation for dependable HTTP communication between services — with sensible
-          defaults, auth strategies, lifecycle hooks and retry support.
+          A lightweight HTTP client for service-to-service communication, with sensible defaults,
+          authentication strategies, lifecycle hooks, and retry support.
         </Typography>
       </Stack>
 
