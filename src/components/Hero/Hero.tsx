@@ -25,6 +25,7 @@ export const Hero = () => {
                 fontSize: { xs: '2.5rem', md: '4.5rem' },
                 lineHeight: 1.05,
                 maxWidth: 900,
+                textWrap: 'wrap',
               }}
             >
               Reliable toolkit for service-to-service communication
@@ -33,7 +34,13 @@ export const Hero = () => {
               label="Built for microservices, internal APIs, integrations, and background workers"
               color="primary"
               variant="outlined"
-              sx={{ mt: 1, mb: 1 }}
+              sx={{ mt: 1, mb: 1, display: { xs: 'none', sm: 'inline-flex' } }}
+            />
+            <Chip
+              label="Built for modern backend systems"
+              color="primary"
+              variant="outlined"
+              sx={{ mt: 1, mb: 1, display: { xs: 'inline-flex', sm: 'none' } }}
             />
 
             <ProjectBadges />

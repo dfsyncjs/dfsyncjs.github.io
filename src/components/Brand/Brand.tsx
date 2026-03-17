@@ -30,7 +30,12 @@ export const Brand = () => {
       />
       <Typography
         variant="h6"
-        sx={{ display: 'flex', textDecoration: 'none', color: 'inherit', fontWeight: 700 }}
+        sx={{
+          display: { xs: 'none', sm: 'flex' },
+          textDecoration: 'none',
+          color: 'inherit',
+          fontWeight: 700,
+        }}
       >
         dfsync
       </Typography>
