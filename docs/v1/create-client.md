@@ -58,18 +58,26 @@ type ClientConfig = {
 };
 ```
 
-## Supported request methods
+## HTTP methods
 
-The client provides these convenience methods:
+The client provides a predictable set of methods:
 
-- client.get(path, options?)
-- client.post(path, body?, options?)
-- client.put(path, body?, options?)
-- client.delete(path, options?)
+```text
+client.get(path, options?)
+client.delete(path, options?)
 
-It also provides:
+client.post(path, body?, options?)
+client.put(path, body?, options?)
+client.patch(path, body?, options?)
 
-- client.request(config)
+client.request(config)
+```
+
+### Body vs options
+
+- `get` and `delete` do not accept body
+- `post`, `put`, and `patch` accept request body as the second argument
+- `options` is used for headers, query, timeout, retry, and other settings
 
 ## GET request
 
@@ -110,13 +118,33 @@ const updated = await client.put('/users/1', {
 });
 ```
 
+## PATCH request
+
+```ts
+const updatedUser = await client.patch('/users/1', {
+  name: 'Jane',
+});
+```
+
 ## DELETE request
 
 ```ts
 const result = await client.delete('/users/1');
 ```
 
-## Low-level request API
+## Request options
+
+```ts
+type RequestOptions = {
+  query?: Record<string, string | number | boolean | null | undefined>;
+  headers?: Record<string, string>;
+  timeout?: number;
+  retry?: RetryConfig;
+  signal?: AbortSignal;
+};
+```
+
+## Low-level request
 
 ```ts
 const result = await client.request({
@@ -132,28 +160,18 @@ const result = await client.request({
 });
 ```
 
-## Request options
-
-For `get()` and `delete()`:
-
-```ts
-type RequestOptions = {
-  query?: Record<string, string | number | boolean | null | undefined>;
-  headers?: Record<string, string>;
-  timeout?: number;
-};
-```
-
-For `request()`:
+### Request Config
 
 ```ts
 type RequestConfig = {
-  method: 'GET' | 'POST' | 'PUT' | 'DELETE';
+  method: 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
   path: string;
   query?: Record<string, string | number | boolean | null | undefined>;
   body?: unknown;
   headers?: Record<string, string>;
   timeout?: number;
+  retry?: RetryConfig;
+  signal?: AbortSignal;
 };
 ```
 

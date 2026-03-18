@@ -31,7 +31,7 @@ export const ProjectBadges = () => {
       >
         <Box
           component="img"
-          src={`https://img.shields.io/npm/dm/${encodeURI(packageName)}`}
+          src={`https://img.shields.io/npm/dw/${encodeURI(packageName)}`}
           alt="npm downloads"
           sx={{ height: 20 }}
         />

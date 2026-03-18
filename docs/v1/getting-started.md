@@ -18,10 +18,11 @@ The client focuses on predictable behavior, extensibility, and a clean developer
 - request timeout support
 - automatic JSON parsing
 - text response support
-- structured error classes
-- auth support
-- lifecycle hooks
-- retry support
+- consistent error handling with structured error classes
+- auth support: `bearer`, `API key` and custom
+- lifecycle hooks: `beforeRequest`, `afterResponse`, `onError`
+- support for `GET`, `POST`, `PUT`, `PATCH`, and `DELETE`
+- retry policies
 - custom `fetch` support
 
 ## Quick example
