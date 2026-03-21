@@ -3,6 +3,7 @@ import { AppBar, Box, Button, Container, Toolbar } from '@mui/material';
 import { Link as RouterLink } from 'react-router-dom';
 import { Brand } from '../Brand/Brand';
 import { ThemeToggle } from '../ThemeToggle/ThemeToggle';
+import { createTrackedLinkHandler } from '../../services/analytics-handlers.ts';
 
 export const Header = () => {
   return (
@@ -20,7 +21,16 @@ export const Header = () => {
         <Toolbar disableGutters sx={{ minHeight: 72, gap: 2, justifyContent: 'space-between' }}>
           <Brand />
           <Box sx={{ flexShrink: 0 }}>
-            <Button component={RouterLink} to="/docs" color="inherit">
+            <Button
+              component={RouterLink}
+              to="/docs"
+              color="inherit"
+              onClick={createTrackedLinkHandler('docs', {
+                location: 'header',
+                url: 'https://github.com/dfsyncjs/dfsync',
+                label: 'Docs',
+              })}
+            >
               Docs
             </Button>
             <Button
@@ -28,6 +38,11 @@ export const Header = () => {
               href="https://www.npmjs.com/package/@dfsync/client"
               target="_blank"
               rel="noreferrer"
+              onClick={createTrackedLinkHandler('npm', {
+                location: 'header',
+                url: 'https://github.com/dfsyncjs/dfsync',
+                label: 'npm',
+              })}
             >
               npm
             </Button>
@@ -37,6 +52,11 @@ export const Header = () => {
               target="_blank"
               rel="noreferrer"
               startIcon={<GitHubIcon />}
+              onClick={createTrackedLinkHandler('github', {
+                location: 'header',
+                url: 'https://github.com/dfsyncjs/dfsync',
+                label: 'GitHub',
+              })}
             >
               GitHub
             </Button>
