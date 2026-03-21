@@ -1,4 +1,5 @@
 import { Box, Container, Link, Stack, Typography } from '@mui/material';
+import { createTrackedLinkHandler } from '../../services/analytics-handlers.ts';
 
 export const Footer = () => {
   return (
@@ -27,6 +28,11 @@ export const Footer = () => {
               target="_blank"
               rel="noreferrer"
               underline="hover"
+              onClick={createTrackedLinkHandler('npm', {
+                location: 'footer',
+                url: 'https://github.com/dfsyncjs/dfsync',
+                label: 'npm',
+              })}
             >
               npm
             </Link>
@@ -35,6 +41,11 @@ export const Footer = () => {
               target="_blank"
               rel="noreferrer"
               underline="hover"
+              onClick={createTrackedLinkHandler('github', {
+                location: 'footer',
+                url: 'https://github.com/dfsyncjs/dfsync',
+                label: 'GitHub',
+              })}
             >
               GitHub
             </Link>
