@@ -15,6 +15,24 @@ Each hook can be:
 
 Hooks run sequentially in the order you provide them.
 
+## Request metadata
+
+Hooks receive a rich lifecycle context, including request metadata and execution details.
+
+```ts
+const client = createClient({
+  baseUrl: 'https://api.example.com',
+  hooks: {
+    beforeRequest: (ctx) => {
+      console.log(ctx.requestId, ctx.attempt);
+    },
+    onError: (ctx) => {
+      console.error(ctx.requestId, ctx.error);
+    },
+  },
+});
+```
+
 ## beforeRequest
 
 Use `beforeRequest` to mutate headers or the final request URL before `fetch` is called.
