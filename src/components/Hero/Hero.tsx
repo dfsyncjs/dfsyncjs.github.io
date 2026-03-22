@@ -4,6 +4,7 @@ import { Box, Button, Chip, Container, Stack, Typography } from '@mui/material';
 import { Link as RouterLink } from 'react-router-dom';
 import { InstallCommand } from '../InstallCommand/InstallCommand';
 import { ProjectBadges } from '../ProjectBadges/ProjectBadges.tsx';
+import { createTrackedLinkHandler } from '../../services/analytics';
 
 export const Hero = () => {
   return (
@@ -74,6 +75,14 @@ export const Hero = () => {
               target="_blank"
               rel="noreferrer"
               endIcon={<OpenInNewIcon />}
+              onClick={createTrackedLinkHandler({
+                params: {
+                  cta_name: 'npm',
+                  location: 'hero',
+                  label: 'View on npm',
+                  link_url: 'https://www.npmjs.com/package/@dfsync/client',
+                },
+              })}
             >
               View on npm
             </Button>
@@ -84,6 +93,14 @@ export const Hero = () => {
               size="medium"
               to="/docs"
               startIcon={<ListIcon />}
+              onClick={createTrackedLinkHandler({
+                params: {
+                  cta_name: 'docs',
+                  location: 'hero',
+                  label: 'Documentation',
+                  link_url: '/docs',
+                },
+              })}
             >
               Documentation
             </Button>
