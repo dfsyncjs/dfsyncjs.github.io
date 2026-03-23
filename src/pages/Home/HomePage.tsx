@@ -1,6 +1,6 @@
 import { useContext } from 'react';
 import { Box } from '@mui/material';
-import { Header, Hero, Features, Footer } from '../../components';
+import { Header, Hero, Features, Footer, Problem } from '../../components';
 import { ThemeModeContext } from '../../app/themeContext';
 
 const HomePage = () => {
@@ -19,6 +19,7 @@ const HomePage = () => {
       <Header />
       <Hero />
       <Features />
+      <Problem />
       <Footer />
     </Box>
   );

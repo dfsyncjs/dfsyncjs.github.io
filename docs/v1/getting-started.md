@@ -1,6 +1,6 @@
 # Getting Started
 
-`@dfsync/client` is a lightweight TypeScript HTTP client designed for reliable service-to-service communication.
+`@dfsync/client` is a lightweight HTTP client built around a predictable request lifecycle for service-to-service communication in Node.js.
 
 It provides sensible defaults for:
 
@@ -11,19 +11,20 @@ It provides sensible defaults for:
 
 The client focuses on predictable behavior, extensibility, and a clean developer experience.
 
-## What you get
+## Main features
+
+- predictable request lifecycle
+- request ID propagation (`x-request-id`)
+- request cancellation via `AbortSignal`
+- built-in retry with configurable policies
+- lifecycle hooks: `beforeRequest`, `afterResponse`, `onError`
 
 - typed responses
-- simple client creation
-- request timeout support
 - automatic JSON parsing
-- text response support
-- consistent error handling with structured error classes
-- auth support: `bearer`, `API key` and custom
-- lifecycle hooks: `beforeRequest`, `afterResponse`, `onError`
+- consistent error handling
+
+- auth support: bearer, API key, custom
 - support for `GET`, `POST`, `PUT`, `PATCH`, and `DELETE`
-- retry policies
-- custom `fetch` support
 
 ## Quick example
 
@@ -41,53 +42,22 @@ const client = createClient({
 });
 
 const user = await client.get<User>('/users/1');
-
-console.log(user.id);
-console.log(user.name);
 ```
 
 ## How requests work
 
-A request in `@dfsync/client` goes through the following lifecycle:
+A request in `@dfsync/client` follows a predictable lifecycle:
 
-1. Build request URL
-
-   The final URL is constructed from `baseUrl`, `path`, and optional query parameters.
-
-2. Merge headers
-
-   Default headers, client-level headers, and request-level headers are combined.
-
-3. Apply authentication
-
-   The configured auth strategy (Bearer, API key, or custom) is applied to the request.
-
-4. Run `beforeRequest` hooks
-
-   Hooks can modify the request before it is sent.
-
-5. Execute the HTTP request
-
-   The request is sent using the Fetch API.
-
-6. Retry if necessary
-
-   If the request fails with a retryable error, it may be retried according to the configured retry policy.
-
-7. Parse the response
-
-   The response body is parsed automatically:
-   - JSON → parsed object
-   - text → string
-   - `204 No Content` → `undefined`
-
-8. Handle errors
-
-   Non-success responses and network failures are converted into structured errors.
-
-9. Run response hooks
-   - `afterResponse` runs for successful responses
-   - `onError` runs when an error occurs
+1. create request context
+2. build final URL from `baseUrl`, `path`, and query params
+3. merge client and request headers
+4. apply authentication
+5. attach request metadata (e.g. `x-request-id`)
+6. run `beforeRequest` hooks
+7. send request with `fetch`
+8. retry on failure (if configured)
+9. parse response (JSON, text, or `undefined`)
+10. run `afterResponse` or `onError` hooks
 
 ## Runtime requirements
 

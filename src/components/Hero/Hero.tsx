@@ -11,7 +11,7 @@ export const Hero = () => {
     <Box
       component="section"
       sx={{
-        py: { xs: 6, md: 12 },
+        py: { xs: 2, md: 4 },
         background: 'radial-gradient(circle at top, rgba(56,189,248,0.15), transparent 40%)',
       }}
     >
@@ -56,9 +56,9 @@ export const Hero = () => {
                 lineHeight: 1.6,
               }}
             >
-              The first package, <strong>@dfsync/client</strong>, provides a lightweight and
-              reliable HTTP client for service-to-service communication in Node.js, with built-in
-              retry, authentication, and lifecycle hooks.
+              The first package, <strong>@dfsync/client</strong>, is a lightweight HTTP client built
+              around a predictable request lifecycle for service-to-service communication in
+              Node.js.
             </Typography>
           </Box>
 
@@ -114,7 +114,7 @@ export const Hero = () => {
               width: '100%',
               p: { xs: 3, md: 4 },
               borderRadius: 1,
-              bgcolor: 'background.paper',
+              backgroundColor: 'background.paper',
               border: '1px solid',
               borderColor: 'divider',
               overflowX: 'auto',
@@ -130,14 +130,17 @@ export const Hero = () => {
                 color: 'text.primary',
               }}
             >
-              {`import { createClient } from "@dfsync/client";
+              {`import { createClient } from '@dfsync/client';
 
 const client = createClient({
-  baseURL: "https://api.example.com",
-  retry: { attempts: 3 }
+  baseURL: 'https://api.example.com',
+  retry: { attempts: 3 },
 });
 
-const users = await client.get("/users");`}
+const users = await client.get('/users', {
+  requestId: 'req_123',
+});
+`}
             </Typography>
           </Box>
         </Stack>

@@ -1,5 +1,5 @@
 import HubIcon from '@mui/icons-material/Hub';
-import SecurityIcon from '@mui/icons-material/Security';
+import AutorenewIcon from '@mui/icons-material/Autorenew';
 import LockIcon from '@mui/icons-material/Lock';
 import ReplayIcon from '@mui/icons-material/Replay';
 import DeviceHubIcon from '@mui/icons-material/DeviceHub';
@@ -35,23 +35,23 @@ const items = [
     description: 'Built-in request lifecycle hooks like beforeRequest, afterResponse, and onError.',
   },
   {
-    icon: <SecurityIcon fontSize="large" />,
-    title: 'Production-oriented',
-    description:
-      'Designed for reliability, clear request behavior, and maintainable service communication.',
+    icon: <AutorenewIcon fontSize="large" />,
+    title: 'Predictable lifecycle',
+    description: 'Every request follows a clear and controllable lifecycle.',
   },
 ];
 
 export const Features = () => {
   return (
-    <Container maxWidth="lg" sx={{ pb: { xs: 8, md: 12 } }}>
+    <Container maxWidth="lg" sx={{ py: { xs: 2, md: 4 } }}>
       <Stack spacing={2} sx={{ mb: 5 }}>
         <Typography variant="h2" sx={{ fontSize: { xs: '2rem', md: '3rem' } }}>
           Why @dfsync/client
         </Typography>
         <Typography color="text.secondary" sx={{ maxWidth: 720 }}>
-          A lightweight HTTP client for service-to-service communication, with sensible defaults,
-          authentication strategies, lifecycle hooks, and retry support.
+          A lightweight HTTP client with a predictable request lifecycle for service-to-service
+          communication with sensible defaults, authentication strategies, lifecycle hooks, and
+          retry support.
         </Typography>
       </Stack>
 

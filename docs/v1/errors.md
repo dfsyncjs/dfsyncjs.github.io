@@ -4,10 +4,13 @@
 
 ## Error classes
 
-- `DfsyncError`
-- `HttpError`
-- `NetworkError`
-- `TimeoutError`
+- `DfsyncError` - basic Error class
+- `HttpError` — non-2xx responses
+- `NetworkError` — network failures
+- `TimeoutError` — request timed out
+- `RequestAbortedError` — request was cancelled
+
+- This allows you to handle failures more precisely.
 
 ## Base error
 
@@ -167,9 +170,7 @@ if (error instanceof HttpError) {
 Errors thrown inside:
 
 - custom auth
-
 - `beforeRequest`
-
 - `afterResponse`
 
 are rethrown as-is.
