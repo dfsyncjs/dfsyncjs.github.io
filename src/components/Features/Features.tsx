@@ -3,6 +3,7 @@ import AutorenewIcon from '@mui/icons-material/Autorenew';
 import LockIcon from '@mui/icons-material/Lock';
 import ReplayIcon from '@mui/icons-material/Replay';
 import DeviceHubIcon from '@mui/icons-material/DeviceHub';
+import InsightsIcon from '@mui/icons-material/Insights';
 import BoltIcon from '@mui/icons-material/Bolt';
 import { Card, CardContent, Container, Grid, Stack, Typography } from '@mui/material';
 
@@ -27,17 +28,23 @@ const items = [
   {
     icon: <ReplayIcon fontSize="large" />,
     title: 'Retry support',
-    description: 'Built-in configurable retry policies for transient failures.',
+    description: 'Built-in retry policies with Retry-After support and full retry visibility..',
   },
   {
     icon: <DeviceHubIcon fontSize="large" />,
     title: 'Lifecycle hooks',
-    description: 'Built-in request lifecycle hooks like beforeRequest, afterResponse, and onError.',
+    description: 'Lifecycle hooks including beforeRequest, afterResponse, onError, and onRetry.',
+  },
+  {
+    icon: <InsightsIcon fontSize="large" />,
+    title: 'Observability',
+    description: 'Built-in request visibility with timing, retry metadata, and lifecycle insights.',
   },
   {
     icon: <AutorenewIcon fontSize="large" />,
     title: 'Predictable lifecycle',
-    description: 'Every request follows a clear and controllable lifecycle.',
+    description:
+      'Every request follows a clear, controllable lifecycle with full visibility into execution and retries.',
   },
 ];
 
@@ -49,9 +56,8 @@ export const Features = () => {
           Why @dfsync/client
         </Typography>
         <Typography color="text.secondary" sx={{ maxWidth: 720 }}>
-          A lightweight HTTP client with a predictable request lifecycle for service-to-service
-          communication with sensible defaults, authentication strategies, lifecycle hooks, and
-          retry support.
+          A lightweight HTTP client with a predictable request lifecycle, built-in retries, and
+          request observability for service-to-service communication.
         </Typography>
       </Stack>
 
@@ -70,6 +76,9 @@ export const Features = () => {
           </Grid>
         ))}
       </Grid>
+      <Typography variant="h5" sx={{ mt: 4 }}>
+        Includes request timing, retry reasons, and stable request IDs across retries.
+      </Typography>
     </Container>
   );
 };

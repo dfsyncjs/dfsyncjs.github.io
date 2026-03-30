@@ -57,7 +57,7 @@ export const Hero = () => {
               }}
             >
               The first package, <strong>@dfsync/client</strong>, is a lightweight HTTP client built
-              around a predictable request lifecycle for service-to-service communication in
+              for reliable communication with retries, hooks, and built-in request observability in
               Node.js.
             </Typography>
           </Box>
@@ -133,12 +133,13 @@ export const Hero = () => {
               {`import { createClient } from '@dfsync/client';
 
 const client = createClient({
-  baseURL: 'https://api.example.com',
-  retry: { attempts: 3 },
-});
-
-const users = await client.get('/users', {
-  requestId: 'req_123',
+  baseUrl: 'https://api.example.com',
+  retry: { attempts: 2, retryOn: ['5xx', '429'] },
+  hooks: {
+    onRetry({ requestId, retryReason, retryDelayMs }) {
+      console.log(requestId, retryReason, retryDelayMs);
+    },
+  },
 });
 `}
             </Typography>

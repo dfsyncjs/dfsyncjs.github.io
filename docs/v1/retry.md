@@ -6,40 +6,64 @@ Retries are useful when communicating with external services that may temporaril
 
 The retry behavior can be configured globally for the client or overridden per request.
 
----
+Retries can be configured for:
 
-## Basic retry configuration
+- `network-error`
+- `5xx`
+- `429`
 
 ```ts
-import { createClient } from '@dfsync/client';
-
 const client = createClient({
   baseUrl: 'https://api.example.com',
   retry: {
     attempts: 2,
+    retryOn: ['network-error', '5xx', '429'],
+    backoff: 'exponential',
+    baseDelayMs: 300,
   },
 });
 ```
 
-If a retryable error occurs, the request will be retried up to the configured number of attempts.
+## Retry-After support
 
-## Retry conditions
+When a retryable response includes a `Retry-After` header, `@dfsync/client` uses that value before falling back to the configured backoff strategy.
 
-By default, retries happen for:
+Supported formats:
 
-- network errors
-- HTTP 5xx responses
+- seconds
+- HTTP-date
 
-Example:
+If `Retry-After` is invalid, `@dfsync/client` falls back to normal retry backoff.
+
+## Observing retries
+
+Use `onRetry` to inspect retry behavior.
 
 ```ts
 const client = createClient({
   baseUrl: 'https://api.example.com',
   retry: {
-    attempts: 3,
+    attempts: 2,
+    retryOn: ['5xx', '429'],
+  },
+  hooks: {
+    onRetry: ({ requestId, retryReason, retryDelayMs, retrySource }) => {
+      console.log({
+        requestId,
+        retryReason,
+        retryDelayMs,
+        retrySource,
+      });
+    },
   },
 });
 ```
+
+## Notes
+
+- `attempt` is zero-based
+- `maxAttempts` is the total number of allowed attempts, including the initial request
+- `requestId` remains stable across retries
 
 ## Retry backoff
 
@@ -111,40 +135,6 @@ const client = createClient({
 });
 ```
 
-## Retry conditions configuration
-
-You can control which errors trigger retries.
-
-Supported conditions:
-
-- network-error
-- 5xx
-- 429
-
-Example:
-
-```ts
-const client = createClient({
-  baseUrl: 'https://api.example.com',
-  retry: {
-    attempts: 2,
-    retryOn: ['network-error', '5xx', '429'],
-  },
-});
-```
-
-## Per-request retry override
-
-Request-level configuration overrides the client configuration.
-
-```ts
-await client.get('/users', {
-  retry: {
-    attempts: 1,
-  },
-});
-```
-
 ## Retry and hooks
 
 Hooks behave as follows when retries are enabled:
@@ -168,12 +158,3 @@ const client = createClient({
   },
 });
 ```
-
-## Summary
-
-Retry is designed for **safe and predictable service-to-service communication** and works well for:
-
-- microservices
-- external APIs
-- background workers
-- integration services

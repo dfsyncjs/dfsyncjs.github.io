@@ -1,12 +1,13 @@
 # Hooks
 
-Hooks allow you to extend the behavior of the HTTP client during the request lifecycle.
+Hooks allow you to extend and observe the request lifecycle.
 
 Supported hooks:
 
 - `beforeRequest`
 - `afterResponse`
 - `onError`
+- `onRetry`
 
 Each hook can be:
 
@@ -17,7 +18,22 @@ Hooks run sequentially in the order you provide them.
 
 ## Request metadata
 
-Hooks receive a rich lifecycle context, including request metadata and execution details.
+Hooks receive structured lifecycle metadata, including request details, retry information, and timing fields.
+
+Available metadata includes:
+
+- `requestId` — stable across retries
+- `attempt`
+- `maxAttempts`
+- `startedAt`
+- `endedAt`
+- `durationMs`
+
+Retry-specific hooks also expose:
+
+- `retryDelayMs`
+- `retryReason`
+- `retrySource`
 
 ```ts
 const client = createClient({
@@ -25,9 +41,6 @@ const client = createClient({
   hooks: {
     beforeRequest: (ctx) => {
       console.log(ctx.requestId, ctx.attempt);
-    },
-    onError: (ctx) => {
-      console.error(ctx.requestId, ctx.error);
     },
   },
 });
@@ -97,6 +110,12 @@ const client = createClient({
 
 If one `beforeRequest` hook throws, the request is not sent and the original error is rethrown.
 
+### beforeRequest context
+
+```text
+request, url, headers, signal, attempt, maxAttempts, requestId, startedAt
+```
+
 ## afterResponse
 
 Use `afterResponse` to inspect successful responses after parsing.
@@ -133,6 +152,12 @@ const client = createClient({
 
 If an `afterResponse` hook throws, that hook error is rethrown.
 
+### afterResponse context
+
+```text
+request, url, headers, signal, attempt, maxAttempts, requestId, startedAt, endedAt, durationMs, response, data
+```
+
 ## onError
 
 Use `onError` to observe failed requests.
@@ -160,25 +185,58 @@ If an `onError` hook itself throws, the original request error is preserved.
 
 This is intentional, so hook failures never hide the real request failure.
 
-## Hook context
-
-### beforeRequest context
-
-```text
-request, url, headers
-```
-
-### afterResponse context
-
-```text
-request, url, headers, response, data
-```
-
 ### onError context
 
 ```text
-request, url, headers, error
+request, url, headers, signal, attempt, maxAttempts, requestId, startedAt, endedAt, durationMs, error
 ```
+
+## onRetry
+
+Use `onRetry` to observe retry behavior before the next attempt is executed.
+
+```ts
+const client = createClient({
+  baseUrl: 'https://api.example.com',
+  retry: {
+    attempts: 2,
+    retryOn: ['5xx', '429'],
+  },
+  hooks: {
+    onRetry: ({ requestId, attempt, maxAttempts, retryDelayMs, retryReason, retrySource }) => {
+      console.log(
+        `[${requestId}] retry ${attempt + 1}/${maxAttempts} in ${retryDelayMs}ms`,
+        retryReason,
+        retrySource,
+      );
+    },
+  },
+});
+```
+
+`onRetry` runs only when a retry will actually happen.
+
+### onRetry context
+
+```text
+request, url, headers, signal, attempt, maxAttempts, requestId, startedAt, endedAt, durationMs, error, retryDelayMs, retryReason, retrySource
+```
+
+## Hook context summary
+
+All hooks receive request lifecycle metadata.
+
+Common fields:
+
+```text
+request, url, headers, signal, attempt, maxAttempts, requestId, startedAt
+```
+
+Additional fields:
+
+- `afterResponse` → `endedAt`, `durationMs`, `response`,`data`
+- `onError` → `endedAt`, `durationMs`, `error`
+- `onRetry` → `endedAt`, `durationMs`, `error`, `retryDelayMs`, `retryReason`, `retrySource`
 
 ## Hook order
 
@@ -186,10 +244,26 @@ Request lifecycle order is:
 
 1. auth
 2. `beforeRequest`
-3. fetch
+3. fetch execution
 4. response parsing
 5. `afterResponse` on success
-6. `onError` on failure
+
+Retry flow:
+
+1. auth
+2. `beforeRequest`
+3. fetch execution
+4. retry decision
+5. `onRetry` before the next attempt
+6. next retry attempt
+
+Failure flow:
+
+1. auth
+2. `beforeRequest`
+3. fetch execution
+4. retry loop (if enabled)
+5. `onError` on final failure
 
 ## Hook config example
 

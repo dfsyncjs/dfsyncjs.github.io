@@ -8,6 +8,7 @@ export const docsContent = {
     retry: () => import('../../docs/v1/retry.md?raw'),
     errors: () => import('../../docs/v1/errors.md?raw'),
     examples: () => import('../../docs/v1/examples.md?raw'),
+    observability: () => import('../../docs/v1/observability.md?raw'),
   },
 } as const;
 

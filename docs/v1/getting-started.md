@@ -31,37 +31,27 @@ The client focuses on predictable behavior, extensibility, and a clean developer
 ```ts
 import { createClient } from '@dfsync/client';
 
-type User = {
-  id: string;
-  name: string;
-};
-
 const client = createClient({
   baseUrl: 'https://api.example.com',
   timeout: 5000,
+  retry: {
+    attempts: 2,
+    retryOn: ['5xx', 'network-error'],
+  },
+  hooks: {
+    onRetry: ({ requestId, retryReason, retryDelayMs }) => {
+      console.log(`[${requestId}] retrying in ${retryDelayMs}ms`, retryReason);
+    },
+  },
 });
 
-const user = await client.get<User>('/users/1');
+const data = await client.get('/health');
 ```
 
-## How requests work
+This gives you:
 
-A request in `@dfsync/client` follows a predictable lifecycle:
-
-1. create request context
-2. build final URL from `baseUrl`, `path`, and query params
-3. merge client and request headers
-4. apply authentication
-5. attach request metadata (e.g. `x-request-id`)
-6. run `beforeRequest` hooks
-7. send request with `fetch`
-8. retry on failure (if configured)
-9. parse response (JSON, text, or `undefined`)
-10. run `afterResponse` or `onError` hooks
-
-## Runtime requirements
-
-- Node.js >= 20
-- a working fetch implementation
-
-If you do not pass a custom `fetch`, the client uses `globalThis.fetch`.
+- timeouts
+- retries
+- structured errors
+- request lifecycle hooks
+- built-in retry observability
