@@ -23,11 +23,11 @@ export function Problem() {
 
       <Typography color="text.secondary" sx={{ maxWidth: 720, mb: 4 }}>
         In most projects, HTTP clients are rebuilt again and again — with slightly different retry
-        logic, error handling, and request flows.
+        logic, error handling, and no visibility into what actually happened.
         <br />
         <br />
-        <strong>@dfsync/client</strong> provides a predictable and reusable request lifecycle out of
-        the box for service-to-service communication.
+        <strong>@dfsync/client</strong> provides a predictable, observable, and reusable request
+        lifecycle out of the box for service-to-service communication.
       </Typography>
 
       <Grid container spacing={3}>
