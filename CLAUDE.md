@@ -33,17 +33,33 @@ If behavior is unclear, check the release branch or ask before documenting it.
 
 Markdown docs live in:
 
-- `docs/v1/*.md`
+- `docs/<package-slug>/<version>/*.md`
+
+Current `@dfsync/client` docs live in:
+
+- `docs/client/v1/*.md`
 
 Docs are loaded by:
 
 - `src/content/docsContent.ts`
 
-Docs navigation is defined in:
+Default docs constants are defined in:
 
 - `src/content/docsNavigation.ts`
 
-When adding a new markdown page, add it to both `docsContent.ts` and `docsNavigation.ts` unless the page is intentionally hidden.
+Package docs navigation and markdown imports are defined in `docsPackages` inside `src/content/docsContent.ts`.
+
+When adding a new markdown page, add it to the relevant package/version entry in `docsPackages` unless the page is intentionally hidden.
+
+The default docs package is `client`, so `#/docs` is treated as `@dfsync/client` documentation.
+
+Canonical docs URLs use:
+
+- `#/docs/<package-slug>/<version>/<page-slug>`
+
+For example:
+
+- `#/docs/client/v1/getting-started`
 
 ## Current docs pages
 
@@ -84,8 +100,18 @@ When preparing docs for a new `@dfsync/client` release:
 4. Check new or changed error classes.
 5. Check tests for behavioral rules.
 6. Update relevant docs pages.
-7. Update `docsContent.ts` and `docsNavigation.ts` if adding pages.
+7. Update `docsPackages` in `docsContent.ts` if adding pages or packages.
 8. Run verification commands.
+
+## Adding another package
+
+When adding docs for another package:
+
+1. Create `docs/<package-slug>/<version>`.
+2. Add the package to `docsPackages` in `src/content/docsContent.ts`.
+3. Define package label, default version, default page slug, navigation, and markdown imports.
+4. Keep `client` as the default docs package unless the product direction changes.
+5. Verify package routes under `#/docs/<package-slug>/<version>/<page-slug>`.
 
 ## Local commands
 

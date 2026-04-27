@@ -24,9 +24,10 @@ Package monorepo:
 ## Project structure
 
 ```text
-docs/v1/                        Markdown documentation content
-src/content/docsContent.ts      Markdown import map
-src/content/docsNavigation.ts   Docs sidebar/navigation
+docs/<package>/<version>/        Markdown documentation content
+docs/client/v1/                  @dfsync/client v1 documentation
+src/content/docsContent.ts      Package docs registry and markdown import map
+src/content/docsNavigation.ts   Default docs package/version constants
 src/pages/Docs/                 Documentation page renderer
 src/components/                 Shared UI components
 src/services/analytics/         Analytics helpers
@@ -48,10 +49,32 @@ The current `v1` docs include:
 - Examples
 - API Reference
 
-When adding a new markdown file under `docs/v1`, also add it to:
+`#/docs` is the default documentation entry point for `@dfsync/client`.
+
+Canonical documentation URLs use:
+
+```text
+#/docs/<package>/<version>/<page>
+```
+
+For example:
+
+```text
+#/docs/client/v1/getting-started
+```
+
+When adding a new markdown file under `docs/<package>/<version>`, also add it to the relevant package/version entry in:
 
 - `src/content/docsContent.ts`
-- `src/content/docsNavigation.ts`
+
+## Adding package docs
+
+To add documentation for another package:
+
+1. Create `docs/<package>/<version>`.
+2. Add the package to `docsPackages` in `src/content/docsContent.ts`.
+3. Define the package label, default version, default page, navigation, and markdown imports.
+4. Verify routes under `#/docs/<package>/<version>/<page>`.
 
 ## Source of truth
 

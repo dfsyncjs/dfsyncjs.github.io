@@ -57,8 +57,8 @@ export const Hero = () => {
               }}
             >
               The first package, <strong>@dfsync/client</strong>, is a lightweight HTTP client built
-              for reliable communication with retries, hooks, and built-in request observability in
-              Node.js.
+              for reliable communication with retries, hooks, response validation, idempotency keys,
+              and built-in request observability in Node.js.
             </Typography>
           </Box>
 
@@ -91,14 +91,14 @@ export const Hero = () => {
               component={RouterLink}
               variant="outlined"
               size="medium"
-              to="/docs"
+              to="/docs/client"
               startIcon={<ListIcon />}
               onClick={createTrackedLinkHandler({
                 params: {
                   cta_name: 'docs',
                   location: 'hero',
                   label: 'Documentation',
-                  link_url: '/docs',
+                  link_url: '/docs/client',
                 },
               })}
             >
@@ -134,6 +134,9 @@ export const Hero = () => {
 
 const client = createClient({
   baseUrl: 'https://api.example.com',
+  validateResponse(data) {
+    return typeof data === 'object' && data !== null;
+  },
   retry: { attempts: 2, retryOn: ['5xx', '429'] },
   hooks: {
     onRetry({ requestId, retryReason, retryDelayMs }) {

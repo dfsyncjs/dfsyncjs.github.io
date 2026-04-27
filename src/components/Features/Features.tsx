@@ -5,6 +5,8 @@ import ReplayIcon from '@mui/icons-material/Replay';
 import DeviceHubIcon from '@mui/icons-material/DeviceHub';
 import InsightsIcon from '@mui/icons-material/Insights';
 import BoltIcon from '@mui/icons-material/Bolt';
+import FactCheckIcon from '@mui/icons-material/FactCheck';
+import KeyIcon from '@mui/icons-material/Key';
 import { Card, CardContent, Container, Grid, Stack, Typography } from '@mui/material';
 
 const items = [
@@ -28,7 +30,19 @@ const items = [
   {
     icon: <ReplayIcon fontSize="large" />,
     title: 'Retry support',
-    description: 'Built-in retry policies with Retry-After support and full retry visibility..',
+    description: 'Built-in retry policies with Retry-After support and full retry visibility.',
+  },
+  {
+    icon: <FactCheckIcon fontSize="large" />,
+    title: 'Response validation',
+    description:
+      'Validate successful responses and fail fast with ValidationError when payloads drift.',
+  },
+  {
+    icon: <KeyIcon fontSize="large" />,
+    title: 'Idempotency keys',
+    description:
+      'Attach idempotency keys for safer retries of non-idempotent POST and PATCH requests.',
   },
   {
     icon: <DeviceHubIcon fontSize="large" />,
@@ -56,8 +70,9 @@ export const Features = () => {
           Why @dfsync/client
         </Typography>
         <Typography color="text.secondary" sx={{ maxWidth: 720 }}>
-          A lightweight HTTP client with a predictable request lifecycle, built-in retries, and
-          request observability for service-to-service communication.
+          A lightweight HTTP client with a predictable request lifecycle, built-in retries, response
+          validation, idempotency keys, and request observability for service-to-service
+          communication.
         </Typography>
       </Stack>
 
@@ -77,7 +92,8 @@ export const Features = () => {
         ))}
       </Grid>
       <Typography variant="h5" sx={{ mt: 4 }}>
-        Includes request timing, retry reasons, and stable request IDs across retries.
+        Includes request timing, retry reasons, validation metadata, and stable request IDs across
+        retries.
       </Typography>
     </Container>
   );
