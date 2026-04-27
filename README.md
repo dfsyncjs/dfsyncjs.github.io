@@ -1,73 +1,110 @@
-# React + TypeScript + Vite
+# dfsyncjs.github.io
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Documentation website for [`@dfsync/client`](https://github.com/dfsyncjs/dfsync/tree/main/packages/client).
 
-Currently, two official plugins are available:
+`@dfsync/client` is a Node.js and TypeScript HTTP client for service-to-service communication. It provides retries, auth, lifecycle hooks, request metadata, response validation, and structured errors.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+Website repository:
 
-## React Compiler
+- https://github.com/dfsyncjs/dfsyncjs.github.io
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+Package monorepo:
 
-## Expanding the ESLint configuration
+- https://github.com/dfsyncjs/dfsync
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+## Tech stack
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+- React
+- TypeScript
+- Vite
+- Material UI
+- React Router
+- `react-markdown` with `remark-gfm`
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+## Project structure
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-]);
+```text
+docs/v1/                        Markdown documentation content
+src/content/docsContent.ts      Markdown import map
+src/content/docsNavigation.ts   Docs sidebar/navigation
+src/pages/Docs/                 Documentation page renderer
+src/components/                 Shared UI components
+src/services/analytics/         Analytics helpers
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+## Documentation pages
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x';
-import reactDom from 'eslint-plugin-react-dom';
+The current `v1` docs include:
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-]);
+- Getting Started
+- Installation
+- Create Client
+- Response Handling
+- Auth
+- Hooks
+- Observability
+- Retry
+- Errors
+- Examples
+- API Reference
+
+When adding a new markdown file under `docs/v1`, also add it to:
+
+- `src/content/docsContent.ts`
+- `src/content/docsNavigation.ts`
+
+## Source of truth
+
+Docs should match the current `@dfsync/client` source in the monorepo:
+
+- `packages/client/src/index.ts`
+- `packages/client/src/types/*`
+- `packages/client/src/errors/*`
+- `packages/client/src/core/*`
+- `packages/client/tests`
+
+For release documentation, compare the release branch or PR against `main` before editing this site.
+
+## Development
+
+Install dependencies:
+
+```bash
+npm install
 ```
+
+Start the dev server:
+
+```bash
+npm run dev
+```
+
+Build for production:
+
+```bash
+npm run build
+```
+
+Preview the production build:
+
+```bash
+npm run preview
+```
+
+## Verification
+
+Run these before opening or merging documentation changes:
+
+```bash
+npm run format:check
+npm run typecheck
+npm run lint
+npm run build
+```
+
+## Notes for docs updates
+
+- Use `baseUrl`, not `baseURL`.
+- Keep examples aligned with the public `@dfsync/client` API.
+- Do not document behavior unless it is confirmed by source or tests.
+- If a behavior is release-specific, check the active release branch or PR.
