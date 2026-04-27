@@ -9,6 +9,7 @@ It provides a consistent way to configure:
 - auth
 - lifecycle hooks
 - request observability metadata
+- response validation
 
 ## Basic client
 
@@ -64,6 +65,7 @@ type ClientConfig = {
     // see Hooks section
   };
   retry?: RetryConfig;
+  validateResponse?: ResponseValidator;
 };
 ```
 
@@ -100,7 +102,7 @@ client.request(config)
 
 - `get` and `delete` do not accept body
 - `post`, `put`, and `patch` accept request body as the second argument
-- `options` is used for headers, query, timeout, retry, and other settings
+- `options` is used for headers, query, timeout, retry, validation, idempotency keys, and other settings
 
 ## GET request
 
@@ -165,12 +167,16 @@ type RequestOptions = {
   retry?: RetryConfig;
   signal?: AbortSignal;
   requestId?: string;
+  idempotencyKey?: string;
+  validateResponse?: ResponseValidator;
 };
 ```
 
 `requestId` can be provided explicitly when you want to correlate logs or trace a request across services.
 
 Request-level `retry` overrides client-level retry settings.
+
+Request-level `validateResponse` overrides client-level response validation.
 
 ## Low-level request
 
@@ -201,6 +207,8 @@ type RequestConfig = {
   retry?: RetryConfig;
   signal?: AbortSignal;
   requestId?: string;
+  idempotencyKey?: string;
+  validateResponse?: ResponseValidator;
 };
 ```
 
@@ -257,6 +265,55 @@ await client.get('/users', {
   },
 });
 ```
+
+## Idempotency key
+
+Use `idempotencyKey` for non-idempotent operations that may be retried safely.
+
+```ts
+await client.post(
+  '/payments',
+  { amount: 100 },
+  {
+    idempotencyKey: 'payment-123',
+  },
+);
+```
+
+This adds:
+
+```http
+idempotency-key: payment-123
+```
+
+If both `idempotencyKey` and an explicit `idempotency-key` header are provided, the explicit header takes precedence.
+
+`POST` and `PATCH` requests are retried only when the method is included in `retry.retryMethods` and the request provides `idempotencyKey`.
+
+## Response validation
+
+Use `validateResponse` to validate parsed response data before it is returned.
+
+```ts
+const client = createClient({
+  baseUrl: 'https://api.example.com',
+  validateResponse(data) {
+    return typeof data === 'object' && data !== null && 'id' in data;
+  },
+});
+```
+
+You can override validation per request:
+
+```ts
+await client.get('/users/1', {
+  validateResponse(data) {
+    return typeof data === 'object' && data !== null && 'email' in data;
+  },
+});
+```
+
+Returning `false` throws `ValidationError`. Returning `true` or `undefined` passes validation.
 
 ## Request cancellation
 
@@ -361,5 +418,6 @@ If the header value is invalid, `@dfsync/client` falls back to normal retry back
 ## Related guides
 
 - See **Hooks** for lifecycle hooks and observability metadata
+- See **Response Handling** for parsing and response validation
 - See **Retry** for retry conditions, backoff, and `Retry-After`
 - See **Errors** for failure behavior and error types

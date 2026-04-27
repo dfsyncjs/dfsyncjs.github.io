@@ -7,6 +7,7 @@ Each request exposes:
 - **requestId** — stable identifier across retries
 - **attempt / maxAttempts** — retry progress
 - **startedAt / endedAt / durationMs** — timing information
+- **validation** — response validation metadata in `afterResponse`, when validation is configured
 - **retryReason** — why a retry happened (`network-error`, `5xx`, `429`)
 - **retryDelayMs** — delay before the next retry
 - **retrySource** — delay source (`backoff` or `retry-after`)
@@ -38,5 +39,6 @@ const client = createClient({
 This makes it easier to understand:
 
 - what happened during a request
+- whether response validation ran and passed
 - how retries behaved
 - how long requests actually took

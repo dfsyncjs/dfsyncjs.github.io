@@ -35,6 +35,8 @@ Retry-specific hooks also expose:
 - `retryReason`
 - `retrySource`
 
+`afterResponse` also exposes validation metadata when response validation is configured and passes.
+
 ```ts
 const client = createClient({
   baseUrl: 'https://api.example.com',
@@ -90,7 +92,7 @@ const client = createClient({
 });
 ```
 
-### Multiple beforeRequest hooks
+### Multiple afterResponse hooks
 
 ```ts
 const client = createClient({
@@ -152,10 +154,31 @@ const client = createClient({
 
 If an `afterResponse` hook throws, that hook error is rethrown.
 
+### Validation metadata
+
+When `validateResponse` is configured and passes, `afterResponse` receives `validation`.
+
+```ts
+const client = createClient({
+  baseUrl: 'https://api.example.com',
+  validateResponse(data) {
+    return typeof data === 'object' && data !== null && 'id' in data;
+  },
+  hooks: {
+    afterResponse: ({ validation }) => {
+      console.log(validation);
+      // { enabled: true, passed: true }
+    },
+  },
+});
+```
+
+If validation is not configured, `validation` is not present.
+
 ### afterResponse context
 
 ```text
-request, url, headers, signal, attempt, maxAttempts, requestId, startedAt, endedAt, durationMs, response, data
+request, url, headers, signal, attempt, maxAttempts, requestId, startedAt, endedAt, durationMs, response, data, validation?
 ```
 
 ## onError
@@ -178,6 +201,8 @@ onError runs for:
 - HttpError
 - NetworkError
 - TimeoutError
+- ValidationError
+- RequestAbortedError
 
 ### Important behavior
 
@@ -234,7 +259,7 @@ request, url, headers, signal, attempt, maxAttempts, requestId, startedAt
 
 Additional fields:
 
-- `afterResponse` → `endedAt`, `durationMs`, `response`,`data`
+- `afterResponse` → `endedAt`, `durationMs`, `response`, `data`, optional `validation`
 - `onError` → `endedAt`, `durationMs`, `error`
 - `onRetry` → `endedAt`, `durationMs`, `error`, `retryDelayMs`, `retryReason`, `retrySource`
 
@@ -246,16 +271,19 @@ Request lifecycle order is:
 2. `beforeRequest`
 3. fetch execution
 4. response parsing
-5. `afterResponse` on success
+5. response validation, if configured
+6. `afterResponse` on success
 
 Retry flow:
 
 1. auth
 2. `beforeRequest`
 3. fetch execution
-4. retry decision
-5. `onRetry` before the next attempt
-6. next retry attempt
+4. response parsing
+5. response validation, if configured
+6. retry decision
+7. `onRetry` before the next attempt
+8. next retry attempt
 
 Failure flow:
 

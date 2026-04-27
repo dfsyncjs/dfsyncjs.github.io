@@ -17,13 +17,15 @@ The client focuses on predictable behavior, extensibility, and a clean developer
 - request ID propagation (`x-request-id`)
 - request cancellation via `AbortSignal`
 - built-in retry with configurable policies
-- lifecycle hooks: `beforeRequest`, `afterResponse`, `onError`
+- lifecycle hooks: `beforeRequest`, `afterResponse`, `onError`, `onRetry`
 
 - typed responses
 - automatic JSON parsing
+- response validation with `ValidationError`
 - consistent error handling
 
 - auth support: bearer, API key, custom
+- idempotency key support for safer retries
 - support for `GET`, `POST`, `PUT`, `PATCH`, and `DELETE`
 
 ## Quick example

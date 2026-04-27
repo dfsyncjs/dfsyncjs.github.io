@@ -3,8 +3,10 @@
 ## Basic client
 
 ```ts
+import { createClient } from '@dfsync/client';
+
 const client = createClient({
-  baseURL: 'https://api.example.com',
+  baseUrl: 'https://api.example.com',
 });
 ```
 
@@ -49,10 +51,53 @@ const singleUser = await client.request<User>({
 
 ```ts
 const client = createClient({
-  baseURL: 'https://api.example.com',
-
-  auth: async ({ request }) => {
-    request.headers.set('Authorization', 'Bearer TOKEN');
+  baseUrl: 'https://api.example.com',
+  auth: {
+    type: 'bearer',
+    token: 'TOKEN',
   },
 });
+```
+
+## Response validation
+
+```ts
+import { ValidationError } from '@dfsync/client';
+
+const client = createClient({
+  baseUrl: 'https://api.example.com',
+  validateResponse(data) {
+    return typeof data === 'object' && data !== null && 'id' in data;
+  },
+});
+
+try {
+  const user = await client.get('/users/1');
+  console.log(user);
+} catch (error) {
+  if (error instanceof ValidationError) {
+    console.error(error.data);
+  }
+}
+```
+
+## Safe POST retry
+
+```ts
+const client = createClient({
+  baseUrl: 'https://api.example.com',
+  retry: {
+    attempts: 2,
+    retryMethods: ['POST'],
+    retryOn: ['5xx'],
+  },
+});
+
+const payment = await client.post(
+  '/payments',
+  { amount: 100 },
+  {
+    idempotencyKey: 'payment-123',
+  },
+);
 ```
