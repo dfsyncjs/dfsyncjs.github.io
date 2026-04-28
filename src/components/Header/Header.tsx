@@ -1,4 +1,5 @@
 import GitHubIcon from '@mui/icons-material/GitHub';
+import LinkedIn from '@mui/icons-material/LinkedIn';
 import { AppBar, Box, Button, Container, Toolbar } from '@mui/material';
 import { Link as RouterLink } from 'react-router-dom';
 import { Brand } from '../Brand/Brand';
@@ -42,22 +43,6 @@ export const Header = () => {
             </Button>
             <Button
               color="inherit"
-              href="https://www.npmjs.com/package/@dfsync/client"
-              target="_blank"
-              rel="noreferrer"
-              onClick={createTrackedLinkHandler({
-                params: {
-                  cta_name: 'npm',
-                  location: 'header',
-                  label: 'npm',
-                  link_url: 'https://www.npmjs.com/package/@dfsync/client',
-                },
-              })}
-            >
-              npm
-            </Button>
-            <Button
-              color="inherit"
               href="https://github.com/dfsyncjs/dfsync"
               target="_blank"
               rel="noreferrer"
@@ -72,6 +57,23 @@ export const Header = () => {
               })}
             >
               GitHub
+            </Button>
+            <Button
+              color="inherit"
+              href="https://www.linkedin.com/company/dfsync/"
+              target="_blank"
+              rel="noreferrer"
+              startIcon={<LinkedIn />}
+              onClick={createTrackedLinkHandler({
+                params: {
+                  cta_name: 'linkedIn',
+                  location: 'header',
+                  label: 'LinkedIn',
+                  link_url: 'https://www.linkedin.com/company/dfsync/',
+                },
+              })}
+            >
+              LinkedIn
             </Button>
             <ThemeToggle />
           </Box>
