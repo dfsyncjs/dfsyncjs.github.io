@@ -1,7 +1,11 @@
 import { lazy } from 'react';
 import { Navigate } from 'react-router-dom';
 import type { RouteObject } from 'react-router-dom';
-import { defaultDocsSlug, defaultDocsVersion } from '../content/docsNavigation.ts';
+import {
+  defaultDocsPackage,
+  defaultDocsSlug,
+  defaultDocsVersion,
+} from '../content/docsNavigation.ts';
 
 const HomePage = lazy(() => import('../pages/Home/HomePage'));
 const DocsPage = lazy(() =>
@@ -18,10 +22,19 @@ export const routes: RouteObject[] = [
   },
   {
     path: '/docs',
-    element: <Navigate to={`/docs/${defaultDocsVersion}/${defaultDocsSlug}`} replace />,
+    element: (
+      <Navigate
+        to={`/docs/${defaultDocsPackage}/${defaultDocsVersion}/${defaultDocsSlug}`}
+        replace
+      />
+    ),
   },
   {
-    path: '/docs/:version/:slug',
+    path: '/docs/:packageSlug',
+    element: <DocsPage />,
+  },
+  {
+    path: '/docs/:packageSlug/:version/:slug',
     element: <DocsPage />,
   },
   {

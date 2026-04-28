@@ -2,7 +2,8 @@ import { Container, Grid, Typography, Paper } from '@mui/material';
 const items = [
   {
     title: 'Repeated boilerplate',
-    description: 'Every project reimplements retry, auth, and error handling differently.',
+    description:
+      'Every project reimplements retry, auth, validation, and error handling differently.',
   },
   {
     title: 'Unpredictable behavior',
@@ -10,7 +11,8 @@ const items = [
   },
   {
     title: 'Lack of control',
-    description: 'No unified way to control retries, cancellation, and request lifecycle.',
+    description:
+      'No unified way to control retries, cancellation, response validation, and request lifecycle.',
   },
 ];
 
@@ -23,11 +25,12 @@ export function Problem() {
 
       <Typography color="text.secondary" sx={{ maxWidth: 720, mb: 4 }}>
         In most projects, HTTP clients are rebuilt again and again — with slightly different retry
-        logic, error handling, and no visibility into what actually happened.
+        logic, error handling, response validation, and no visibility into what actually happened.
         <br />
         <br />
         <strong>@dfsync/client</strong> provides a predictable, observable, and reusable request
-        lifecycle out of the box for service-to-service communication.
+        lifecycle out of the box for service-to-service communication, including safer retries for
+        non-idempotent operations.
       </Typography>
 
       <Grid container spacing={3}>

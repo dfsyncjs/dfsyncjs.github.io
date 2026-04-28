@@ -1,38 +1,79 @@
 import { useEffect, useMemo, useState } from 'react';
-import { Link as RouterLink, useParams } from 'react-router-dom';
+import { Link as RouterLink, useNavigate, useParams } from 'react-router-dom';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import {
   Box,
   CircularProgress,
   Container,
+  FormControl,
   List,
   ListItemButton,
   ListItemText,
+  MenuItem,
   Paper,
+  Select,
   Stack,
   Typography,
 } from '@mui/material';
-import { defaultDocsSlug, defaultDocsVersion, docsNavigation } from '../../content/docsNavigation';
-import { docsContent } from '../../content/docsContent';
+import type { SelectChangeEvent } from '@mui/material/Select';
+import {
+  defaultDocsPackage,
+  defaultDocsSlug,
+  defaultDocsVersion,
+} from '../../content/docsNavigation';
+import { docsPackages } from '../../content/docsContent';
 import { Footer, Header } from '../../components';
+import { DOCS_SIDEBAR_OFFSET } from '../../app/layout';
 
 export function DocsPage() {
-  const { version = defaultDocsVersion, slug = defaultDocsSlug } = useParams();
+  const navigate = useNavigate();
+  const {
+    packageSlug = defaultDocsPackage,
+    version = defaultDocsVersion,
+    slug = defaultDocsSlug,
+  } = useParams();
   const [content, setContent] = useState<string>('');
   const [loading, setLoading] = useState(true);
 
-  const normalizedVersion = useMemo(
-    () => (version in docsContent ? version : defaultDocsVersion),
-    [version],
+  const normalizedPackageSlug = useMemo(
+    () => (packageSlug in docsPackages ? packageSlug : defaultDocsPackage),
+    [packageSlug],
   );
 
-  const currentVersionDocs = docsContent[normalizedVersion as keyof typeof docsContent];
+  const currentPackage = docsPackages[normalizedPackageSlug as keyof typeof docsPackages];
+
+  const normalizedVersion = useMemo(
+    () => (version in currentPackage.versions ? version : currentPackage.defaultVersion),
+    [version, currentPackage],
+  );
+
+  const currentVersionDocs =
+    currentPackage.versions[normalizedVersion as keyof typeof currentPackage.versions];
 
   const normalizedSlug = useMemo(
-    () => (slug && slug in currentVersionDocs ? slug : defaultDocsSlug),
-    [slug, currentVersionDocs],
+    () => (slug && slug in currentVersionDocs.content ? slug : currentPackage.defaultSlug),
+    [slug, currentVersionDocs, currentPackage.defaultSlug],
   );
+
+  const docsNavigation = currentVersionDocs.navigation;
+  const currentDocsContent = currentVersionDocs.content;
+  const packageVersions = useMemo(() => Object.keys(currentPackage.versions), [currentPackage]);
+
+  const handleVersionChange = (event: SelectChangeEvent) => {
+    const nextVersion = event.target.value;
+    const nextVersionDocs =
+      currentPackage.versions[nextVersion as keyof typeof currentPackage.versions];
+
+    if (!nextVersionDocs) {
+      return;
+    }
+
+    const nextSlug =
+      normalizedSlug in nextVersionDocs.content ? normalizedSlug : currentPackage.defaultSlug;
+
+    navigate(`/docs/${normalizedPackageSlug}/${nextVersion}/${nextSlug}`);
+  };
 
   useEffect(() => {
     let isMounted = true;
@@ -40,7 +81,7 @@ export function DocsPage() {
     async function loadDoc() {
       setLoading(true);
 
-      const importer = currentVersionDocs[normalizedSlug as keyof typeof currentVersionDocs];
+      const importer = currentDocsContent[normalizedSlug as keyof typeof currentDocsContent];
 
       const module = await importer();
 
@@ -55,7 +96,7 @@ export function DocsPage() {
     return () => {
       isMounted = false;
     };
-  }, [currentVersionDocs, normalizedSlug]);
+  }, [currentDocsContent, normalizedSlug]);
 
   return (
     <>
@@ -67,16 +108,41 @@ export function DocsPage() {
             sx={{
               width: { xs: '100%', md: 280 },
               position: { md: 'sticky' },
-              top: 96,
+              top: { md: DOCS_SIDEBAR_OFFSET },
               p: 1,
               borderRadius: 1,
             }}
           >
-            <Typography sx={{ px: 2, py: 1.5, fontWeight: 700 }}>Docs</Typography>
+            <Box sx={{ px: 2, py: 1.5 }}>
+              <Typography sx={{ fontWeight: 700 }}>Docs</Typography>
+              <Typography variant="body2" color="text.secondary">
+                {currentPackage.label}
+              </Typography>
+
+              <FormControl fullWidth size="small" sx={{ mt: 1.5 }}>
+                <Select
+                  value={normalizedVersion}
+                  onChange={handleVersionChange}
+                  inputProps={{ 'aria-label': 'Documentation version' }}
+                  sx={{
+                    borderRadius: 1,
+                    '& .MuiSelect-select': {
+                      py: 0.75,
+                    },
+                  }}
+                >
+                  {packageVersions.map((packageVersion) => (
+                    <MenuItem key={packageVersion} value={packageVersion}>
+                      {packageVersion}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            </Box>
 
             <List disablePadding>
               {docsNavigation.map((item) => {
-                const to = `/docs/${normalizedVersion}/${item.slug}`;
+                const to = `/docs/${normalizedPackageSlug}/${normalizedVersion}/${item.slug}`;
                 const isActive = item.slug === normalizedSlug;
 
                 return (

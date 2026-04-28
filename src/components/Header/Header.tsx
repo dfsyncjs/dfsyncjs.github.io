@@ -4,6 +4,7 @@ import { Link as RouterLink } from 'react-router-dom';
 import { Brand } from '../Brand/Brand';
 import { ThemeToggle } from '../ThemeToggle/ThemeToggle';
 import { createTrackedLinkHandler } from '../../services/analytics';
+import { APP_HEADER_HEIGHT } from '../../app/layout';
 
 export const Header = () => {
   return (
@@ -18,7 +19,10 @@ export const Header = () => {
       }}
     >
       <Container maxWidth="lg">
-        <Toolbar disableGutters sx={{ minHeight: 72, gap: 2, justifyContent: 'space-between' }}>
+        <Toolbar
+          disableGutters
+          sx={{ minHeight: APP_HEADER_HEIGHT, gap: 2, justifyContent: 'space-between' }}
+        >
           <Brand />
           <Box sx={{ flexShrink: 0 }}>
             <Button

@@ -121,9 +121,14 @@ By default retries apply to:
 - `PUT`
 - `DELETE`
 
-POST requests are **not retried by default**.
+`POST` and `PATCH` requests are **not retried by default**.
 
-Example enabling POST retries:
+To retry `POST` or `PATCH`, both conditions must be true:
+
+- the method is explicitly included in `retry.retryMethods`
+- the request provides `idempotencyKey`
+
+Example enabling safe POST retries:
 
 ```ts
 const client = createClient({
@@ -131,19 +136,35 @@ const client = createClient({
   retry: {
     attempts: 2,
     retryMethods: ['GET', 'POST'],
+    retryOn: ['5xx'],
   },
 });
+
+await client.post(
+  '/payments',
+  { amount: 100 },
+  {
+    idempotencyKey: 'payment-123',
+  },
+);
 ```
+
+The idempotency key is propagated as the `idempotency-key` header.
+
+If `POST` or `PATCH` is included in `retryMethods` without `idempotencyKey`, the request is not retried.
+
+Validation failures are not retried.
 
 ## Retry and hooks
 
 Hooks behave as follows when retries are enabled:
 
-| Hook            | Behavior                              |
-| --------------- | ------------------------------------- |
-| `beforeRequest` | executed on every retry attempt       |
-| `afterResponse` | executed only on successful response  |
-| `onError`       | executed once after the final failure |
+| Hook            | Behavior                               |
+| --------------- | -------------------------------------- |
+| `beforeRequest` | executed on every retry attempt        |
+| `afterResponse` | executed only on successful response   |
+| `onRetry`       | executed before the next retry attempt |
+| `onError`       | executed once after the final failure  |
 
 Example:
 

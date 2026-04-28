@@ -8,9 +8,10 @@
 - `HttpError` — non-2xx responses
 - `NetworkError` — network failures
 - `TimeoutError` — request timed out
+- `ValidationError` — response validation failed
 - `RequestAbortedError` — request was cancelled
 
-- This allows you to handle failures more precisely.
+This allows you to handle failures more precisely.
 
 ## Base error
 
@@ -114,14 +115,68 @@ try {
 
 Properties:
 
-- `code` → `"NETWORK_ERROR"`
+- `code` → `"TIMEOUT_ERROR"`
 - `timeout`
+- optional `cause`
+
+## ValidationError
+
+Thrown when a successful response fails `validateResponse`.
+
+```ts
+import { ValidationError } from '@dfsync/client';
+
+try {
+  await client.get('/users/1');
+} catch (error) {
+  if (error instanceof ValidationError) {
+    console.error(error.data);
+    console.error(error.response.status);
+  }
+}
+```
+
+Properties:
+
+- `code` → `"VALIDATION_ERROR"`
+- `data`
+- `response`
+
+Validation failures are not retried.
+
+## RequestAbortedError
+
+Thrown when the request is cancelled by an external `AbortSignal`.
+
+```ts
+import { RequestAbortedError } from '@dfsync/client';
+
+const controller = new AbortController();
+
+const promise = client.get('/users', {
+  signal: controller.signal,
+});
+
+controller.abort();
+
+try {
+  await promise;
+} catch (error) {
+  if (error instanceof RequestAbortedError) {
+    console.error('Request was cancelled');
+  }
+}
+```
+
+Properties:
+
+- `code` → `"REQUEST_ABORTED"`
 - optional `cause`
 
 ## Error handling example
 
 ```ts
-import { HttpError, NetworkError, TimeoutError } from '@dfsync/client';
+import { HttpError, NetworkError, TimeoutError, ValidationError } from '@dfsync/client';
 
 try {
   const result = await client.get('/users/1');
@@ -140,6 +195,11 @@ try {
   if (error instanceof HttpError) {
     console.error('HTTP status:', error.status);
     console.error('Response payload:', error.data);
+    throw error;
+  }
+
+  if (error instanceof ValidationError) {
+    console.error('Unexpected response payload:', error.data);
     throw error;
   }
 
