@@ -4,8 +4,8 @@ import { AppBar, Box, Button, Container, Toolbar } from '@mui/material';
 import { Link as RouterLink } from 'react-router-dom';
 import { Brand } from '../Brand/Brand';
 import { ThemeToggle } from '../ThemeToggle/ThemeToggle';
-import { createTrackedLinkHandler } from '../../services/analytics';
 import { APP_HEADER_HEIGHT } from '../../app/layout';
+import { createTrackedLinkHandler } from '../../services/analytics';
 
 export const Header = () => {
   return (
