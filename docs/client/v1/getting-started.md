@@ -15,18 +15,21 @@ The client focuses on predictable behavior, extensibility, and a clean developer
 
 - predictable request lifecycle
 - request ID propagation (`x-request-id`)
+- operation names for logging and tracing
 - request cancellation via `AbortSignal`
-- built-in retry with configurable policies
+- built-in retry with configurable policies, jitter, and an overall retry budget
 - lifecycle hooks: `beforeRequest`, `afterResponse`, `onError`, `onRetry`
 
 - typed responses
 - automatic JSON parsing
-- response validation with `ValidationError`
-- consistent error handling
+- response validation with `ValidationError`, including schema adapters and a zod adapter
+- custom body serialization and response parsing
+- consistent error handling with request metadata on every error
 
 - auth support: bearer, API key, custom
 - idempotency key support for safer retries
 - support for `GET`, `POST`, `PUT`, `PATCH`, and `DELETE`
+- stable extension interfaces for auth, validation, retry, and telemetry
 
 ## Quick example
 
@@ -57,3 +60,10 @@ This gives you:
 - structured errors
 - request lifecycle hooks
 - built-in retry observability
+
+## Guides by use case
+
+- **Reliable requests** — **Retry**, **Create Client** (idempotency keys, cancellation)
+- **Validation & data shape** — **Response Handling**, **Serialization**
+- **Observability & tracing** — **Observability**, **Hooks**, **Errors**
+- **Extensibility** — **Extensibility** (auth provider, validation adapter, retry policy, telemetry exporter)

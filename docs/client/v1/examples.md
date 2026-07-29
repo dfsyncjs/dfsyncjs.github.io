@@ -81,6 +81,33 @@ try {
 }
 ```
 
+## Schema validation with zod
+
+```ts
+import { z } from 'zod';
+import { createClient, ValidationError } from '@dfsync/client';
+import { zodAdapter } from '@dfsync/client/adapters/zod';
+
+const userSchema = z.object({
+  id: z.string(),
+  name: z.string(),
+});
+
+const client = createClient({
+  baseUrl: 'https://api.example.com',
+  responseSchema: zodAdapter(userSchema),
+});
+
+try {
+  const user = await client.get('/users/1');
+  console.log(user);
+} catch (error) {
+  if (error instanceof ValidationError) {
+    console.error(error.issues);
+  }
+}
+```
+
 ## Safe POST retry
 
 ```ts
@@ -100,4 +127,79 @@ const payment = await client.post(
     idempotencyKey: 'payment-123',
   },
 );
+```
+
+## Bounded retries with jitter
+
+```ts
+const client = createClient({
+  baseUrl: 'https://api.example.com',
+  retry: {
+    attempts: 5,
+    backoff: 'exponential',
+    baseDelayMs: 200,
+    jitter: true,
+    maxElapsedMs: 3000,
+    shouldRetry: ({ method }) => method === 'GET',
+  },
+});
+```
+
+## Form-encoded request body
+
+```ts
+const client = createClient({
+  baseUrl: 'https://api.example.com',
+  serializeBody(body) {
+    return {
+      body: new URLSearchParams(body as Record<string, string>).toString(),
+      contentType: 'application/x-www-form-urlencoded',
+    };
+  },
+});
+
+await client.post('/token', { grant_type: 'client_credentials' });
+```
+
+## Labeled request with telemetry
+
+```ts
+import { createClient, createTelemetryHooks } from '@dfsync/client';
+import type { TelemetryExporter } from '@dfsync/client';
+
+const exporter: TelemetryExporter = {
+  onRequestSuccess({ operationName, durationMs }) {
+    console.log(operationName, durationMs);
+  },
+  onRequestError({ operationName, error }) {
+    console.error(operationName, error);
+  },
+};
+
+const client = createClient({
+  baseUrl: 'https://api.example.com',
+  hooks: createTelemetryHooks(exporter),
+});
+
+await client.get('/users', {
+  operationName: 'listUsers',
+});
+```
+
+## Error metadata at the call site
+
+```ts
+import { DfsyncError } from '@dfsync/client';
+
+try {
+  await client.get('/users/1', { requestId: 'req_123' });
+} catch (error) {
+  if (error instanceof DfsyncError) {
+    console.error({
+      requestId: error.requestId,
+      attempt: error.attempt,
+      durationMs: error.durationMs,
+    });
+  }
+}
 ```

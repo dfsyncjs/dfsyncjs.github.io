@@ -147,6 +147,18 @@ const client = createClient({
 });
 ```
 
+The `apply` function is the exported `AuthProvider` interface, so you can define it separately and reuse it across clients:
+
+```ts
+import type { AuthProvider } from '@dfsync/client';
+
+const serviceAuth: AuthProvider = ({ headers }) => {
+  headers['x-service-name'] = 'billing-worker';
+};
+```
+
+See **Extensibility** for the full interface.
+
 ## Auth context
 
 Custom auth receives:
@@ -206,15 +218,21 @@ type ApiKeyAuthConfig = {
   name?: string;
 };
 
+type AuthContext = {
+  request: RequestConfig;
+  url: URL;
+  headers: Record<string, string>;
+};
+
+type AuthProvider = (ctx: AuthContext) => void | Promise<void>;
+
 type CustomAuthConfig = {
   type: 'custom';
-  apply: (ctx: {
-    request: RequestConfig;
-    url: URL;
-    headers: Record<string, string>;
-  }) => void | Promise<void>;
+  apply: AuthProvider;
 };
 ```
+
+`AuthContext` and `AuthProvider` are exported from the package.
 
 ## Common use cases
 
