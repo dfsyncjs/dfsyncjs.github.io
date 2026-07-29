@@ -23,8 +23,13 @@ Before updating docs for a release, inspect the package source and tests instead
 - `packages/client/src/index.ts`
 - `packages/client/src/types/*`
 - `packages/client/src/errors/*`
+- `packages/client/src/adapters/*`
 - `packages/client/src/core/request.ts`
 - `packages/client/src/core/should-retry.ts`
+- `packages/client/src/core/resolve-runtime-config.ts`
+- `packages/client/src/core/resolve-response-validator.ts`
+- `packages/client/src/core/telemetry.ts`
+- `packages/client/package.json` (exports, peer dependencies)
 - `packages/client/tests`
 
 If behavior is unclear, check the release branch or ask before documenting it.
@@ -67,11 +72,13 @@ For example:
 - Installation
 - Create Client
 - Response Handling
+- Serialization
 - Auth
 - Hooks
 - Observability
 - Retry
 - Errors
+- Extensibility
 - Examples
 - API Reference
 
@@ -80,15 +87,40 @@ For example:
 Keep these names and behaviors consistent across the docs:
 
 - `baseUrl`, never `baseURL`
-- `createClient`
+- `createClient`, `createTelemetryHooks`
 - `get`, `delete`, `post`, `put`, `patch`, `request`
 - auth strategies: `bearer`, `apiKey`, `custom`
-- retry config: `attempts`, `retryOn`, `retryMethods`, `backoff`, `baseDelayMs`
-- request metadata: `requestId`, `x-request-id`
+- auth interfaces: `AuthProvider`, `AuthContext`
+- retry config: `attempts`, `retryOn`, `retryMethods`, `backoff`, `baseDelayMs`, `jitter`,
+  `maxElapsedMs`, `shouldRetry`
+- retry interfaces: `RetryPredicate`, `RetryPredicateContext`
+- request metadata: `requestId`, `x-request-id`, `operationName`
 - idempotency: `idempotencyKey`, `idempotency-key`
-- response validation: `validateResponse`, `ResponseValidator`, `ValidationError`
+- response validation: `validateResponse`, `ResponseValidator`, `responseSchema`,
+  `ValidationAdapter`, `ValidationResult`, `ValidationError`
+- validation adapters: `zodAdapter` from `@dfsync/client/adapters/zod`
+- serialization: `serializeBody`, `parseResponse`, `BodySerializer`, `ResponseParser`,
+  `SerializedBody`, `SerializerContext`
 - hooks: `beforeRequest`, `afterResponse`, `onError`, `onRetry`
+- telemetry: `TelemetryExporter`, `onRequestStart`, `onRequestSuccess`, `onRequestError`,
+  `onRequestRetry`
 - errors: `DfsyncError`, `HttpError`, `NetworkError`, `TimeoutError`, `ValidationError`, `RequestAbortedError`
+- error metadata: `requestId`, `attempt`, `durationMs`, and `issues` on `ValidationError`
+
+## Behavioral rules that are easy to get wrong
+
+- validation runs only after a successful HTTP response, and validation failures are never retried
+- validator precedence: request `responseSchema` → request `validateResponse` →
+  client `responseSchema` → client `validateResponse`
+- `responseSchema` does not transform the response in this version, even when the adapter
+  returns `data`
+- `retry.shouldRetry` runs only after the built-in rules already allow a retry, so it can
+  restrict retries but never widen them
+- `maxElapsedMs` is checked against elapsed time plus the next planned delay
+- `jitter` never applies to `Retry-After` delays
+- `parseResponse` runs for every response, before classification and validation
+- a serializer's `contentType` is applied only when no `content-type` header is set
+- `operationName` is context-only and is never sent as a header
 
 ## Release docs checklist
 

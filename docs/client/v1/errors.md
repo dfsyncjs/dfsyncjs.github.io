@@ -27,6 +27,30 @@ It includes:
 - `code`
 - optional `cause`
 
+## Error metadata
+
+Every error thrown from the request lifecycle extends `DfsyncError` and carries request context metadata. This lets you correlate failures without relying on lifecycle hooks.
+
+- `requestId` — the request identifier (matches `x-request-id`)
+- `attempt` — the attempt number on which the request ultimately failed
+- `durationMs` — total time spent before the error was thrown
+
+```ts
+import { DfsyncError } from '@dfsync/client';
+
+try {
+  await client.get('/users/1', { requestId: 'req_123' });
+} catch (error) {
+  if (error instanceof DfsyncError) {
+    console.log(error.requestId, error.attempt, error.durationMs);
+  }
+}
+```
+
+These fields are optional in the type, because an error constructed outside of a request lifecycle has no request context to attach.
+
+Errors that are not `DfsyncError` instances are left untouched and receive no metadata.
+
 ## HttpError
 
 Thrown when the server returns a non-2xx response.
@@ -121,7 +145,7 @@ Properties:
 
 ## ValidationError
 
-Thrown when a successful response fails `validateResponse`.
+Thrown when a successful response fails `validateResponse` or `responseSchema`.
 
 ```ts
 import { ValidationError } from '@dfsync/client';
@@ -132,6 +156,7 @@ try {
   if (error instanceof ValidationError) {
     console.error(error.data);
     console.error(error.response.status);
+    console.error(error.issues);
   }
 }
 ```
@@ -141,6 +166,28 @@ Properties:
 - `code` → `"VALIDATION_ERROR"`
 - `data`
 - `response`
+- optional `issues`
+
+`issues` carries adapter-specific validation details and is populated when validation ran through a `responseSchema` adapter that reported an `error`. With a plain `validateResponse` predicate there are no adapter details, so `issues` is `undefined`.
+
+```ts
+import { z } from 'zod';
+import { ValidationError } from '@dfsync/client';
+import { zodAdapter } from '@dfsync/client/adapters/zod';
+
+const client = createClient({
+  baseUrl: 'https://api.example.com',
+  responseSchema: zodAdapter(z.object({ id: z.string() })),
+});
+
+try {
+  await client.get('/users/1');
+} catch (error) {
+  if (error instanceof ValidationError) {
+    console.error(error.issues); // the zod error
+  }
+}
+```
 
 Validation failures are not retried.
 
@@ -232,10 +279,13 @@ Errors thrown inside:
 - custom auth
 - `beforeRequest`
 - `afterResponse`
+- `serializeBody`
 
 are rethrown as-is.
 
-They are not converted into `DfsyncError` subclasses.
+They are not converted into `DfsyncError` subclasses, and they do not receive error metadata.
+
+`parseResponse` behaves differently: it runs inside the response phase, so a throwing parser is normalized into `NetworkError`. See **Serialization** for details.
 
 ## Note
 

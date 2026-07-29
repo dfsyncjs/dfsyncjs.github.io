@@ -10,6 +10,7 @@ It provides a consistent way to configure:
 - lifecycle hooks
 - request observability metadata
 - response validation
+- body serialization and response parsing
 
 ## Basic client
 
@@ -66,6 +67,9 @@ type ClientConfig = {
   };
   retry?: RetryConfig;
   validateResponse?: ResponseValidator;
+  responseSchema?: ValidationAdapter;
+  serializeBody?: BodySerializer;
+  parseResponse?: ResponseParser;
 };
 ```
 
@@ -82,6 +86,8 @@ Retry configuration supports:
 - retry conditions
 - backoff strategy
 - `Retry-After` handling
+- jitter and an overall retry budget
+- a custom `shouldRetry` predicate
 
 ## HTTP methods
 
@@ -167,16 +173,22 @@ type RequestOptions = {
   retry?: RetryConfig;
   signal?: AbortSignal;
   requestId?: string;
+  operationName?: string;
   idempotencyKey?: string;
   validateResponse?: ResponseValidator;
+  responseSchema?: ValidationAdapter;
+  serializeBody?: BodySerializer;
+  parseResponse?: ResponseParser;
 };
 ```
 
 `requestId` can be provided explicitly when you want to correlate logs or trace a request across services.
 
+`operationName` labels the request with a stable, human-readable name for logging and tracing.
+
 Request-level `retry` overrides client-level retry settings.
 
-Request-level `validateResponse` overrides client-level response validation.
+Request-level validation, serialization, and parsing options override their client-level counterparts.
 
 ## Low-level request
 
@@ -207,8 +219,12 @@ type RequestConfig = {
   retry?: RetryConfig;
   signal?: AbortSignal;
   requestId?: string;
+  operationName?: string;
   idempotencyKey?: string;
   validateResponse?: ResponseValidator;
+  responseSchema?: ValidationAdapter;
+  serializeBody?: BodySerializer;
+  parseResponse?: ResponseParser;
 };
 ```
 
@@ -217,6 +233,7 @@ type RequestConfig = {
 Each request attempt is executed within a request context that contains:
 
 - `requestId` — stable identifier for the full request lifecycle
+- `operationName` — optional human-readable operation label, present only when provided
 - `attempt` — current retry attempt (zero-based)
 - `maxAttempts` — total number of allowed attempts, including the initial request
 - `signal` — AbortSignal for cancellation
@@ -265,6 +282,36 @@ await client.get('/users', {
   },
 });
 ```
+
+## Operation name
+
+Use `operationName` to attach a stable, human-readable label to a request.
+
+```ts
+await client.get('/users', {
+  operationName: 'listUsers',
+});
+```
+
+Unlike `requestId`, which identifies a single request, `operationName` identifies the _kind_ of request. That makes it useful for grouping logs, metrics, and traces across many executions of the same call.
+
+It is part of the request context and is exposed in every lifecycle hook:
+
+```ts
+const client = createClient({
+  baseUrl: 'https://api.example.com',
+  hooks: {
+    afterResponse({ operationName, requestId, durationMs }) {
+      console.log(operationName, requestId, durationMs);
+      // 'listUsers' 'k3f9x2' 42
+    },
+  },
+});
+```
+
+`operationName` is not sent as a header. It stays inside the client lifecycle, so you decide how to expose it.
+
+When it is not provided, the field is absent from the hook context rather than set to `undefined`.
 
 ## Idempotency key
 
@@ -315,6 +362,20 @@ await client.get('/users/1', {
 
 Returning `false` throws `ValidationError`. Returning `true` or `undefined` passes validation.
 
+For schema-based validation, use `responseSchema` instead — it accepts a `safeParse`-style adapter and ships with a ready-made zod adapter:
+
+```ts
+import { z } from 'zod';
+import { zodAdapter } from '@dfsync/client/adapters/zod';
+
+const client = createClient({
+  baseUrl: 'https://api.example.com',
+  responseSchema: zodAdapter(z.object({ id: z.string() })),
+});
+```
+
+See **Response Handling** for both validation styles and their precedence rules.
+
 ## Request cancellation
 
 Requests can be cancelled using `AbortSignal`:
@@ -362,6 +423,8 @@ Responses are parsed automatically during the response phase:
 - other content types → text
 - `204 No Content` → `undefined`
 
+You can replace this with a custom `parseResponse`. See **Serialization**.
+
 ## Body behavior
 
 If request body is an object, the client:
@@ -373,6 +436,8 @@ If request body is a string, the client:
 
 - sends it as-is
 - does not force a `content-type`
+
+You can replace this with a custom `serializeBody`. See **Serialization**.
 
 ## Retry observability
 
@@ -419,5 +484,7 @@ If the header value is invalid, `@dfsync/client` falls back to normal retry back
 
 - See **Hooks** for lifecycle hooks and observability metadata
 - See **Response Handling** for parsing and response validation
-- See **Retry** for retry conditions, backoff, and `Retry-After`
-- See **Errors** for failure behavior and error types
+- See **Serialization** for `serializeBody` and `parseResponse`
+- See **Retry** for retry conditions, backoff, jitter, and the retry budget
+- See **Errors** for failure behavior, error types, and error metadata
+- See **Extensibility** for the stable extension interfaces

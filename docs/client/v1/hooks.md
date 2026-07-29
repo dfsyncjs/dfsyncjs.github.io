@@ -23,6 +23,7 @@ Hooks receive structured lifecycle metadata, including request details, retry in
 Available metadata includes:
 
 - `requestId` — stable across retries
+- `operationName` — present only when the request provides it
 - `attempt`
 - `maxAttempts`
 - `startedAt`
@@ -115,7 +116,7 @@ If one `beforeRequest` hook throws, the request is not sent and the original err
 ### beforeRequest context
 
 ```text
-request, url, headers, signal, attempt, maxAttempts, requestId, startedAt
+request, url, headers, signal, attempt, maxAttempts, requestId, operationName?, startedAt
 ```
 
 ## afterResponse
@@ -156,7 +157,7 @@ If an `afterResponse` hook throws, that hook error is rethrown.
 
 ### Validation metadata
 
-When `validateResponse` is configured and passes, `afterResponse` receives `validation`.
+When `validateResponse` or `responseSchema` is configured and passes, `afterResponse` receives `validation`.
 
 ```ts
 const client = createClient({
@@ -178,7 +179,7 @@ If validation is not configured, `validation` is not present.
 ### afterResponse context
 
 ```text
-request, url, headers, signal, attempt, maxAttempts, requestId, startedAt, endedAt, durationMs, response, data, validation?
+request, url, headers, signal, attempt, maxAttempts, requestId, operationName?, startedAt, endedAt, durationMs, response, data, validation?
 ```
 
 ## onError
@@ -213,7 +214,7 @@ This is intentional, so hook failures never hide the real request failure.
 ### onError context
 
 ```text
-request, url, headers, signal, attempt, maxAttempts, requestId, startedAt, endedAt, durationMs, error
+request, url, headers, signal, attempt, maxAttempts, requestId, operationName?, startedAt, endedAt, durationMs, error
 ```
 
 ## onRetry
@@ -244,7 +245,7 @@ const client = createClient({
 ### onRetry context
 
 ```text
-request, url, headers, signal, attempt, maxAttempts, requestId, startedAt, endedAt, durationMs, error, retryDelayMs, retryReason, retrySource
+request, url, headers, signal, attempt, maxAttempts, requestId, operationName?, startedAt, endedAt, durationMs, error, retryDelayMs, retryReason, retrySource
 ```
 
 ## Hook context summary
@@ -254,7 +255,7 @@ All hooks receive request lifecycle metadata.
 Common fields:
 
 ```text
-request, url, headers, signal, attempt, maxAttempts, requestId, startedAt
+request, url, headers, signal, attempt, maxAttempts, requestId, operationName?, startedAt
 ```
 
 Additional fields:
@@ -269,21 +270,25 @@ Request lifecycle order is:
 
 1. auth
 2. `beforeRequest`
-3. fetch execution
-4. response parsing
-5. response validation, if configured
-6. `afterResponse` on success
+3. body serialization
+4. fetch execution
+5. response parsing
+6. response validation, if configured
+7. `afterResponse` on success
+
+Body serialization runs after `beforeRequest`, so a hook can still influence it — for example by setting `content-type` before a custom serializer would.
 
 Retry flow:
 
 1. auth
 2. `beforeRequest`
-3. fetch execution
-4. response parsing
-5. response validation, if configured
-6. retry decision
-7. `onRetry` before the next attempt
-8. next retry attempt
+3. body serialization
+4. fetch execution
+5. response parsing
+6. response validation, if configured
+7. retry decision
+8. `onRetry` before the next attempt
+9. next retry attempt
 
 Failure flow:
 
@@ -316,6 +321,21 @@ const client = createClient({
   },
 });
 ```
+
+## Telemetry
+
+If you use hooks purely to export telemetry, `createTelemetryHooks` maps a `TelemetryExporter` onto this same hook mechanism.
+
+```ts
+import { createClient, createTelemetryHooks } from '@dfsync/client';
+
+const client = createClient({
+  baseUrl: 'https://api.example.com',
+  hooks: createTelemetryHooks(exporter),
+});
+```
+
+See **Extensibility** for the exporter interface.
 
 ## Note
 
