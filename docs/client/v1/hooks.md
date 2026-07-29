@@ -202,6 +202,7 @@ onError runs for:
 - HttpError
 - NetworkError
 - TimeoutError
+- ParseError
 - ValidationError
 - RequestAbortedError
 

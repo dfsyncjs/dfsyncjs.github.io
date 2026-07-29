@@ -9,6 +9,7 @@ import {
   DfsyncError,
   HttpError,
   NetworkError,
+  ParseError,
   TimeoutError,
   ValidationError,
   RequestAbortedError,
@@ -203,8 +204,11 @@ Strategies: `bearer`, `apiKey`, `custom`.
 - `HttpError` — non-2xx responses
 - `NetworkError` — network failures
 - `TimeoutError` — request timed out
+- `ParseError` — response body could not be parsed, exposes `response` and optional `cause`
 - `ValidationError` — response validation failed, exposes optional `issues`
 - `RequestAbortedError` — request was cancelled
+
+`ParseError` and `ValidationError` are contract errors and are never retried. All others follow the retry rules above.
 
 ## Exported types
 

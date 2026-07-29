@@ -104,8 +104,11 @@ Keep these names and behaviors consistent across the docs:
 - hooks: `beforeRequest`, `afterResponse`, `onError`, `onRetry`
 - telemetry: `TelemetryExporter`, `onRequestStart`, `onRequestSuccess`, `onRequestError`,
   `onRequestRetry`
-- errors: `DfsyncError`, `HttpError`, `NetworkError`, `TimeoutError`, `ValidationError`, `RequestAbortedError`
-- error metadata: `requestId`, `attempt`, `durationMs`, and `issues` on `ValidationError`
+- errors: `DfsyncError`, `HttpError`, `NetworkError`, `TimeoutError`, `ParseError`,
+  `ValidationError`, `RequestAbortedError`
+- error metadata: `requestId`, `attempt`, `durationMs`, `issues` on `ValidationError`, and
+  `response` / `cause` on `ParseError`
+- contract errors (never retried): `ParseError`, `ValidationError`
 
 ## Behavioral rules that are easy to get wrong
 
@@ -119,6 +122,12 @@ Keep these names and behaviors consistent across the docs:
 - `maxElapsedMs` is checked against elapsed time plus the next planned delay
 - `jitter` never applies to `Retry-After` delays
 - `parseResponse` runs for every response, before classification and validation
+- a parsing failure on a 2xx response throws `ParseError` and is never retried; it is a
+  contract error, not a transport error, and is never reported as `NetworkError`
+- a parsing failure on a non-2xx response still throws `HttpError` with the correct status
+  and `data` left `undefined`, so retry behavior for failed responses is unchanged
+- an abort during parsing keeps `TimeoutError` / `RequestAbortedError`, and a `DfsyncError`
+  thrown by a custom parser is never re-wrapped
 - a serializer's `contentType` is applied only when no `content-type` header is set
 - `operationName` is context-only and is never sent as a header
 

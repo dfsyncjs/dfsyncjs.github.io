@@ -8,6 +8,8 @@ Response handling has three steps:
 2. throw `HttpError` for non-2xx responses
 3. validate successful response data when validation is configured
 
+Each step has its own failure mode: a body that cannot be parsed throws `ParseError`, a non-2xx status throws `HttpError`, and data that fails validation throws `ValidationError`.
+
 ## Response parsing
 
 Responses are parsed automatically:
@@ -19,6 +21,8 @@ Responses are parsed automatically:
 ```ts
 const user = await client.get<User>('/users/1');
 ```
+
+If a response claims to be JSON but its body is malformed, parsing fails with `ParseError` rather than being reported as a network failure. See **Errors**.
 
 The generic type controls the TypeScript return type. Runtime validation is separate and only runs when you configure `validateResponse` or `responseSchema`.
 

@@ -8,10 +8,15 @@
 - `HttpError` — non-2xx responses
 - `NetworkError` — network failures
 - `TimeoutError` — request timed out
+- `ParseError` — response body could not be parsed
 - `ValidationError` — response validation failed
 - `RequestAbortedError` — request was cancelled
 
 This allows you to handle failures more precisely.
+
+`ParseError` and `ValidationError` are **contract errors**: the response arrived, but it is not something the caller can work with. Every other type is a **transport error**: the response never arrived intact.
+
+That distinction drives retry behavior — transport errors can be retried, contract errors never are.
 
 ## Base error
 
@@ -143,6 +148,55 @@ Properties:
 - `timeout`
 - optional `cause`
 
+## ParseError
+
+Thrown when a successful response arrives but its body cannot be parsed.
+
+```ts
+import { ParseError } from '@dfsync/client';
+
+try {
+  await client.get('/users/1');
+} catch (error) {
+  if (error instanceof ParseError) {
+    console.error(error.response.status);
+    console.error(error.cause);
+  }
+}
+```
+
+Properties:
+
+- `code` → `"PARSE_ERROR"`
+- `response`
+- optional `cause` — the original parsing failure
+
+This covers both the default parser and a custom `parseResponse`. A `200` response advertising `content-type: application/json` with a malformed body throws `ParseError`, and so does a custom parser that throws.
+
+Parsing failures are **not retried**. A body the server cannot serialize correctly is a contract problem, not a transient transport problem, so retrying it wastes attempts.
+
+### Failed responses are still classified by status
+
+A parsing failure never masks the HTTP status. When a non-2xx response has an unparsable body, the client still throws `HttpError` with the correct status, leaving `data` as `undefined`:
+
+```ts
+// 503 with an HTML error page but `content-type: application/json`
+try {
+  await client.get('/users/1');
+} catch (error) {
+  if (error instanceof HttpError) {
+    console.log(error.status); // 503
+    console.log(error.data); // undefined
+  }
+}
+```
+
+This also means retry behavior for failed responses is unchanged: a `5xx` whose body cannot be parsed is still retried according to `retryOn`.
+
+### Cancellation still wins
+
+If the request is aborted while the body is being read, the error keeps its own classification — `TimeoutError` or `RequestAbortedError` — rather than becoming `ParseError`.
+
 ## ValidationError
 
 Thrown when a successful response fails `validateResponse` or `responseSchema`.
@@ -223,7 +277,7 @@ Properties:
 ## Error handling example
 
 ```ts
-import { HttpError, NetworkError, TimeoutError, ValidationError } from '@dfsync/client';
+import { HttpError, NetworkError, ParseError, TimeoutError, ValidationError } from '@dfsync/client';
 
 try {
   const result = await client.get('/users/1');
@@ -245,6 +299,11 @@ try {
     throw error;
   }
 
+  if (error instanceof ParseError) {
+    console.error('Unparsable response body:', error.cause);
+    throw error;
+  }
+
   if (error instanceof ValidationError) {
     console.error('Unexpected response payload:', error.data);
     throw error;
@@ -253,6 +312,8 @@ try {
   throw error;
 }
 ```
+
+Order the transport checks (`TimeoutError`, `NetworkError`) and the response checks (`HttpError`, `ParseError`, `ValidationError`) however suits your service — the classes are siblings, not a hierarchy, so the branches are independent.
 
 ## How response bodies are exposed in errors
 
@@ -285,7 +346,12 @@ are rethrown as-is.
 
 They are not converted into `DfsyncError` subclasses, and they do not receive error metadata.
 
-`parseResponse` behaves differently: it runs inside the response phase, so a throwing parser is normalized into `NetworkError`. See **Serialization** for details.
+`parseResponse` behaves differently: it runs inside the response phase, so a throwing parser becomes `ParseError` with the original failure kept as `cause`. Two exceptions preserve more specific classifications:
+
+- an abort raised during parsing stays `TimeoutError` or `RequestAbortedError`
+- a `DfsyncError` thrown by a custom parser is passed through unchanged, never re-wrapped
+
+See **Serialization** for details.
 
 ## Note
 
